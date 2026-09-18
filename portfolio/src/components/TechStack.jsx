@@ -1,7 +1,7 @@
 const skillGroups = [
   {
     title: 'LANGUAGES',
-    skills: ['Python', 'Java', 'JavaScript', 'C++', 'HTML', 'CSS', 'SQL', 'Malayalam'],
+    skills: ['Python', 'Java', 'JavaScript', 'C++', 'SQL', 'HTML', 'CSS', 'Bash']
   },
   {
     title: 'FRAMEWORKS / LIBRARIES',
@@ -9,7 +9,7 @@ const skillGroups = [
   },
   {
     title: 'TOOLS / DATABASES',
-    skills: ['MySQL', 'Git', 'GitHub', 'Linux', 'Bash', 'Vim', 'PyCharm', 'VS Code'],
+    skills: ['MySQL', 'Git', 'GitHub', 'Linux', 'Vim', 'PyCharm', 'Visual Studio Code', 'Canvas REST API', 'Google AI Studio'],
   },
 ];
 
