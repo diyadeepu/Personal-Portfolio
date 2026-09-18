@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import HeroTerminal from './components/HeroTerminal';
 import TechStack from './components/TechStack';
@@ -11,13 +11,21 @@ import Footer from './components/Footer';
 
 function App() {
   const [page, setPage] = useState('home');
+  const [darkMode, setDarkMode] = useState(true);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   const handleNavigate = (targetPage, sectionId = null) => {
     setPage(targetPage);
 
     if (targetPage === 'home') {
       if (sectionId) {
-        // Wait briefly for DOM rendering if coming from another page
         setTimeout(() => {
           const element = document.getElementById(sectionId);
           if (element) {
@@ -33,9 +41,18 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#050505] text-neutral-100 font-mono">
+    <div
+      className={`min-h-screen w-full font-mono transition-colors duration-500 ${
+        darkMode ? 'bg-[#050505] text-neutral-100' : 'bg-slate-50 text-neutral-900'
+      }`}
+    >
       <main className="p-6 md:p-12 flex flex-col items-center gap-12 max-w-5xl mx-auto">
-        <Navbar activePage={page} onNavigate={handleNavigate} />
+        <Navbar
+          activePage={page}
+          onNavigate={handleNavigate}
+          darkMode={darkMode}
+          onToggleTheme={() => setDarkMode(!darkMode)}
+        />
 
         {page === 'contact' && (
           <Contact onBack={() => handleNavigate('home')} />
@@ -51,7 +68,6 @@ function App() {
 
             <TechStack />
 
-            {/* Coursework Button below Tech Stack */}
             <div className="w-full max-w-5xl flex justify-center -mt-4">
               <button
                 onClick={() => handleNavigate('coursework')}
