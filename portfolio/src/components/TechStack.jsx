@@ -1,23 +1,23 @@
 const skillGroups = [
   {
-    title: 'Languages',
-    skills: ['Python', 'Java', 'JavaScript', 'C++', 'SQL', 'HTML/CSS', 'Bash'],
+    title: 'LANGUAGES',
+    skills: ['Python', 'Java', 'JavaScript', 'C++', 'HTML', 'CSS', 'SQL', 'Malayalam'],
   },
   {
-    title: 'Frameworks / Libraries',
+    title: 'FRAMEWORKS / LIBRARIES',
     skills: ['React', 'Node.js', 'Express', 'Tailwind CSS'],
   },
   {
-    title: 'Tools / Databases',
-    skills: ['MySQL', 'Git', 'GitHub', 'Linux', 'Vim', 'PyCharm', 'Visual Studio Code', 'Canvas REST API', 'Google AI Studio'],
+    title: 'TOOLS / DATABASES',
+    skills: ['MySQL', 'Git', 'GitHub', 'Linux', 'Bash', 'Vim', 'PyCharm', 'VS Code'],
   },
 ];
 
 export default function TechStack() {
   return (
-    <section className="w-full max-w-5xl">
+    <section className="w-full max-w-5xl font-mono">
       <div className="mb-6">
-        <p className="text-sm font-bold uppercase tracking-[0.25em] text-white font-mono">
+        <p className="text-sm font-bold uppercase tracking-[0.25em] text-neutral-900 dark:text-white transition-colors duration-500">
           $ tech-stack
         </p>
       </div>
@@ -26,9 +26,9 @@ export default function TechStack() {
         {skillGroups.map((group) => (
           <div
             key={group.title}
-            className="bg-black border border-neutral-800 rounded-xl p-6 font-mono shadow-lg"
+            className="bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-md dark:shadow-lg transition-colors duration-500"
           >
-            <h3 className="mb-5 text-sm uppercase tracking-[0.18em] text-neutral-400">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 mb-4">
               {group.title}
             </h3>
 
@@ -36,7 +36,7 @@ export default function TechStack() {
               {group.skills.map((skill) => (
                 <span
                   key={skill}
-                  className="inline-flex items-center border border-neutral-700 bg-neutral-900 text-xs text-emerald-400 px-3 py-1 rounded-md"
+                  className="text-xs bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 text-emerald-700 dark:text-emerald-400 px-3 py-1.5 rounded-md font-medium transition-colors duration-500"
                 >
                   {skill}
                 </span>
