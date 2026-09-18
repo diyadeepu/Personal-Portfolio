@@ -1,7 +1,7 @@
 const skillGroups = [
   {
     title: 'LANGUAGES',
-    skills: ['Python', 'Java', 'JavaScript', 'C++', 'SQL', 'HTML', 'CSS', 'Bash']
+    skills: ['Python', 'Java', 'JavaScript', 'C++', 'SQL', 'HTML', 'CSS', 'Bash', 'TypeScript']
   },
   {
     title: 'FRAMEWORKS / LIBRARIES',
