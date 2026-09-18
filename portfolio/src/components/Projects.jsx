@@ -6,7 +6,7 @@ const projects = [
     dates: 'May 2026',
     desc: 'Civic-engagement platform matching voters with congressional candidates using Federal Election Commission (FEC) data.',
     tech: ['React', 'Node.js', 'FEC API', 'Tailwind CSS'],
-    github: 'https://github.com/virtuosovodka/beaverhacks',
+    github: 'https://github.com/diyadeepu/Electable',
     video: '/Personal-Portfolio/videos/electable-demo.mp4',
   },
   {
@@ -99,9 +99,9 @@ export default function Projects() {
         ))}
       </div>
 
-      {/* Floating Hover Video Modal (Renders only when video is present) */}
+      {/* Expanded High-Resolution Preview Modal */}
       {activeProject?.video && (
-        <div className="fixed bottom-6 right-6 z-50 w-80 sm:w-96 bg-black border border-emerald-500/60 rounded-xl p-4 shadow-2xl backdrop-blur-md transition-all">
+        <div className="fixed bottom-6 right-6 z-50 w-[calc(100vw-3rem)] sm:w-[32rem] md:w-[36rem] max-w-[95vw] bg-black border border-emerald-500/60 rounded-xl p-4 shadow-2xl backdrop-blur-md transition-all">
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-neutral-800">
             <span className="text-xs font-bold text-emerald-400">
               $ preview --{activeProject.title.toLowerCase().replace(/\s+/g, '-')}
@@ -118,14 +118,14 @@ export default function Projects() {
             )}
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-neutral-800 bg-neutral-950">
+          <div className="overflow-hidden rounded-lg border border-neutral-800 bg-neutral-950 aspect-video flex items-center justify-center">
             <video
               src={activeProject.video}
               autoPlay
               loop
               muted
               playsInline
-              className="w-full h-48 object-cover"
+              className="w-full h-full object-cover"
             />
           </div>
         </div>
