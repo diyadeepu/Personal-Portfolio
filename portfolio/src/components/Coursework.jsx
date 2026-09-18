@@ -1,6 +1,6 @@
 const courseworkGroups = [
   {
-    status: 'Completed / Current',
+    status: 'Completed',
     csMath: [
       'Data Structures',
       'Collaborating with AI',
@@ -20,7 +20,7 @@ const courseworkGroups = [
     ],
   },
   {
-    status: 'Upcoming',
+    status: 'Current / Upcoming',
     csMath: [
       'Software Engineering I',
       'Introduction to Databases',
