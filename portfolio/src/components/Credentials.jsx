@@ -37,11 +37,15 @@ const credentials = [
   },
 ];
 
-export default function Credentials() {
+export default function Credentials({ darkMode }) {
   return (
     <section className="w-full max-w-5xl">
       <div className="mb-6">
-        <p className="text-sm font-bold uppercase tracking-[0.25em] text-white font-mono">
+        <p
+          className={`text-sm font-bold uppercase tracking-[0.25em] font-mono ${
+            darkMode ? 'text-white' : 'text-neutral-900'
+          }`}
+        >
           $ credentials-and-honors
         </p>
       </div>
@@ -50,16 +54,33 @@ export default function Credentials() {
         {credentials.map((group) => (
           <div
             key={group.category}
-            className="bg-black border border-neutral-800 rounded-xl p-6 font-mono shadow-lg"
+            className={`border rounded-xl p-6 font-mono transition-colors duration-500 ${
+              darkMode
+                ? 'bg-black border-neutral-800 shadow-lg'
+                : 'bg-white border-neutral-300 shadow-md'
+            }`}
           >
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-emerald-400">
+            <h3
+              className={`mb-4 text-sm font-semibold uppercase tracking-[0.18em] ${
+                darkMode ? 'text-emerald-400' : 'text-emerald-600 font-bold'
+              }`}
+            >
               # {group.category}
             </h3>
 
             <div className="space-y-2">
               {group.items.map((item, idx) => (
-                <div key={item} className="flex items-start gap-2 text-sm text-neutral-300">
-                  <span className="text-emerald-400">
+                <div
+                  key={item}
+                  className={`flex items-start gap-2 text-sm ${
+                    darkMode ? 'text-neutral-300' : 'text-neutral-900 font-medium'
+                  }`}
+                >
+                  <span
+                    className={
+                      darkMode ? 'text-emerald-400' : 'text-emerald-600 font-bold'
+                    }
+                  >
                     {idx === group.items.length - 1 ? '└──' : '├──'}
                   </span>
                   <span className="leading-relaxed">{item}</span>
