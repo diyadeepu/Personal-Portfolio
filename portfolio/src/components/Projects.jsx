@@ -6,7 +6,7 @@ const projects = [
     dates: 'May 2026',
     desc: 'Civic-engagement platform matching voters with congressional candidates using Federal Election Commission (FEC) data.',
     tech: ['React', 'Node.js', 'FEC API', 'Tailwind CSS'],
-    github: 'https://github.com/diyadeepu/Electable',
+    github: 'https://github.com/virtuosovodka/beaverhacks',
     video: '/Personal-Portfolio/videos/electable-demo.mp4',
   },
   {
