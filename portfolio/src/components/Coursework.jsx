@@ -1,36 +1,45 @@
-export default function Coursework({ onBack }) {
-  const categories = [
-    {
-      title: 'Computer Science & Software Systems',
-      courses: [
-        { code: 'CS 161/162', name: 'Intro to Computer Science I & II (C++)' },
-        { code: 'CS 261', name: 'Data Structures' },
-        { code: 'CS 290', name: 'Web Development' },
-        { code: 'CS 225', name: 'Discrete Structures in Computer Science' },
-        { code: 'CS 340', name: 'Introduction to Databases' },
-      ],
-    },
-    {
-      title: 'Business, Product & Management',
-      courses: [
-        { code: 'BA 101', name: 'Business Now (Foundations of Business)' },
-        { code: 'BA 211', name: 'Financial Accounting' },
-        { code: 'BA 213', name: 'Managerial Accounting' },
-        { code: 'ECON 201', name: 'Intro to Microeconomics' },
-      ],
-    },
-    {
-      title: 'Mathematics & Honors Scholar',
-      courses: [
-        { code: 'MTH 251/252', name: 'Differential & Integral Calculus' },
-        { code: 'MTH 254', name: 'Vector Calculus' },
-        { code: 'HC 199', name: 'Honors Colloquia & Thesis Research' },
-      ],
-    },
-  ];
+const courseworkGroups = [
+  {
+    status: 'Completed / Current',
+    csMath: [
+      'Data Structures',
+      'Collaborating with AI',
+      'Web Development',
+      'Computer Architecture',
+      'Discrete Mathematics',
+      'Intro to Computer Science II',
+      'Differential & Integral Calculus',
+      'Your Data Body',
+    ],
+    business: [
+      'Foundations of the Entrepreneurial Mindset',
+      'Technical Writing & Writing in Business',
+      'Public Speaking',
+      'Principles of Marketing',
+      'Principles of Microeconomics',
+    ],
+  },
+  {
+    status: 'Upcoming',
+    csMath: [
+      'Software Engineering I',
+      'Introduction to Databases',
+      'Analysis of Algorithms',
+      'Operating Systems I',
+      'Introduction to Systems Programming',
+      'Intro to Stats for Engineers',
+    ],
+    business: [
+      'Managing Organizations',
+      'Sustainable Business Operations',
+      'Introduction to Business Law',
+    ],
+  },
+];
 
+export default function Coursework({ onBack }) {
   return (
-    <section className="w-full max-w-3xl font-mono">
+    <section className="w-full max-w-5xl font-mono">
       <button
         onClick={onBack}
         className="mb-6 inline-flex items-center gap-2 text-xs text-neutral-400 hover:text-emerald-400 transition-colors cursor-pointer"
@@ -50,34 +59,55 @@ export default function Coursework({ onBack }) {
           <p className="text-xs text-neutral-500 uppercase tracking-widest mb-1">
             $ cat coursework.txt
           </p>
-          <h1 className="text-2xl font-bold text-white">Relevant Coursework</h1>
+          <h1 className="text-2xl font-bold text-white">$ relevant-coursework</h1>
           <p className="text-sm text-neutral-400 mt-1">
             Oregon State University — Honors College | CS + Business
           </p>
         </div>
 
-        <div className="space-y-6 pt-2">
-          {categories.map((cat) => (
+        <div className="grid gap-6 md:grid-cols-2 pt-2">
+          {courseworkGroups.map((group) => (
             <div
-              key={cat.title}
-              className="p-5 bg-neutral-900/60 border border-neutral-800 rounded-lg space-y-3"
+              key={group.status}
+              className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-6 shadow-lg flex flex-col gap-5"
             >
-              <h2 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                # {cat.title}
-              </h2>
-              <ul className="space-y-2">
-                {cat.courses.map((course) => (
-                  <li
-                    key={course.code}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between text-xs border-b border-neutral-800/50 pb-2 last:border-0 last:pb-0"
-                  >
-                    <span className="font-bold text-neutral-200">
-                      {course.code}
-                    </span>
-                    <span className="text-neutral-400">{course.name}</span>
-                  </li>
-                ))}
-              </ul>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-400 border-b border-neutral-800/60 pb-3">
+                # {group.status}
+              </h3>
+
+              {/* CS, AI & Math */}
+              <div>
+                <p className="text-xs uppercase tracking-wider text-neutral-400 font-bold mb-3">
+                  [ CS, AI & Math ]
+                </p>
+                <div className="space-y-1.5 ml-1">
+                  {group.csMath.map((course, idx) => (
+                    <div key={course} className="flex items-center gap-2 text-xs text-neutral-300">
+                      <span className="text-emerald-400">
+                        {idx === group.csMath.length - 1 ? '└──' : '├──'}
+                      </span>
+                      <span>{course}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Business & Communication */}
+              <div>
+                <p className="text-xs uppercase tracking-wider text-neutral-400 font-bold mb-3">
+                  [ Business & Communication ]
+                </p>
+                <div className="space-y-1.5 ml-1">
+                  {group.business.map((course, idx) => (
+                    <div key={course} className="flex items-center gap-2 text-xs text-neutral-300">
+                      <span className="text-emerald-400">
+                        {idx === group.business.length - 1 ? '└──' : '├──'}
+                      </span>
+                      <span>{course}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
         </div>
