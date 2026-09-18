@@ -1,10 +1,11 @@
-export default function Navbar({ activePage, onNavigate, darkMode, onToggleTheme }) {
+export default function Navbar({ activePage, activeSection, onNavigate, darkMode, onToggleTheme }) {
   const navItems = [
     { label: 'Home', page: 'home', section: null },
     { label: 'Experience', page: 'home', section: 'experience' },
     { label: 'Projects', page: 'home', section: 'projects' },
     { label: 'Credentials', page: 'home', section: 'credentials' },
     { label: 'Contact', page: 'contact', section: null },
+    { label: 'Help', page: 'help', section: null },
   ];
 
   return (
@@ -49,22 +50,30 @@ export default function Navbar({ activePage, onNavigate, darkMode, onToggleTheme
         }`}
       >
         <ul className="flex items-center gap-4 sm:gap-6 text-xs">
-          {navItems.map((item) => (
-            <li key={item.label}>
-              <button
-                onClick={() => onNavigate(item.page, item.section)}
-                className={`transition-colors cursor-pointer hover:text-emerald-400 ${
-                  activePage === item.page && !item.section
-                    ? 'text-emerald-400 font-bold'
-                    : darkMode
-                    ? 'text-neutral-400'
-                    : 'text-neutral-600'
-                }`}
-              >
-                {item.label}
-              </button>
-            </li>
-          ))}
+          {navItems.map((item) => {
+            const isActive = item.section
+              ? activePage === item.page && activeSection === item.section
+              : activePage === item.page;
+
+            return (
+              <li key={item.label}>
+                <button
+                  onClick={() => onNavigate(item.page, item.section)}
+                  className={`transition-colors cursor-pointer ${
+                    isActive
+                      ? darkMode
+                        ? 'text-emerald-400 font-bold'
+                        : 'text-emerald-600 font-bold'
+                      : darkMode
+                      ? 'text-neutral-400 hover:text-emerald-400'
+                      : 'text-neutral-600 hover:text-emerald-600'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </nav>
     </header>
