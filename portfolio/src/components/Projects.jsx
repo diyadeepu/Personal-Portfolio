@@ -10,20 +10,20 @@ const projects = [
     video: '/Personal-Portfolio/videos/electable-demo.mp4',
   },
   {
-    title: 'AI Syllabus Checker',
-    dates: 'Jul 2026 – Present',
-    desc: 'Full-stack web application extracting syllabus tasks via Google AI Studio and Canvas REST APIs into interactive checklists.',
-    tech: ['React', 'Google AI Studio', 'Canvas API', 'Node.js'],
-    github: null,
-    video: null,
-  },
-  {
     title: 'Route4U',
     dates: 'May 2026 – Jun 2026',
     desc: 'Customizable safety navigation landing platform and business framework generating personalized routes based on user preferences.',
     tech: ['React', 'UX Design', 'Product Strategy', 'Tailwind CSS'],
     github: null,
     video: '/Personal-Portfolio/videos/route4u.mp4',
+  },
+  {
+    title: 'AI Syllabus Checker',
+    dates: 'Jul 2026 – Present',
+    desc: 'Full-stack web application extracting syllabus tasks via Google AI Studio and Canvas REST APIs into interactive checklists.',
+    tech: ['React', 'Google AI Studio', 'Canvas API', 'Node.js'],
+    github: null,
+    video: null,
   },
 ];
 
