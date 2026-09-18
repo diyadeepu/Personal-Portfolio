@@ -99,7 +99,7 @@ export default function HeroTerminal({ onContactClick, darkMode }) {
                   : 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100'
               }`}
             >
-              <span>$</span> contact --info
+              <span>$</span> contact --info ↗
             </button>
           </div>
         </div>
