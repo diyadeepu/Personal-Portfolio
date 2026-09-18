@@ -23,7 +23,7 @@ const projects = [
     desc: 'Customizable safety navigation landing platform and business framework generating personalized routes based on user preferences.',
     tech: ['React', 'UX Design', 'Product Strategy', 'Tailwind CSS'],
     github: null,
-    video: null,
+    video: '/Personal-Portfolio/videos/route4u.mp4',
   },
 ];
 
