@@ -13,11 +13,15 @@ const skillGroups = [
   },
 ];
 
-export default function TechStack() {
+export default function TechStack({ darkMode }) {
   return (
     <section className="w-full max-w-5xl font-mono">
       <div className="mb-6">
-        <p className="text-sm font-bold uppercase tracking-[0.25em] text-neutral-900 dark:text-white transition-colors duration-500">
+        <p
+          className={`text-sm font-bold uppercase tracking-[0.25em] ${
+            darkMode ? 'text-white' : 'text-neutral-900'
+          }`}
+        >
           $ tech-stack
         </p>
       </div>
@@ -26,9 +30,17 @@ export default function TechStack() {
         {skillGroups.map((group) => (
           <div
             key={group.title}
-            className="bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-md dark:shadow-lg transition-colors duration-500"
+            className={`border rounded-xl p-6 transition-colors duration-500 ${
+              darkMode
+                ? 'bg-black border-neutral-800 shadow-lg'
+                : 'bg-white border-neutral-300 shadow-md'
+            }`}
           >
-            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 mb-4">
+            <h3
+              className={`text-xs font-bold uppercase tracking-wider mb-4 ${
+                darkMode ? 'text-neutral-200' : 'text-neutral-800'
+              }`}
+            >
               {group.title}
             </h3>
 
@@ -36,7 +48,11 @@ export default function TechStack() {
               {group.skills.map((skill) => (
                 <span
                   key={skill}
-                  className="text-xs bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 text-emerald-700 dark:text-emerald-400 px-3 py-1.5 rounded-md font-medium transition-colors duration-500"
+                  className={`text-xs border px-3 py-1.5 rounded-md font-medium transition-colors duration-500 ${
+                    darkMode
+                      ? 'bg-neutral-900 border-neutral-800 text-emerald-400'
+                      : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                  }`}
                 >
                   {skill}
                 </span>

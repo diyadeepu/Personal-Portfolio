@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Navbar from './components/Navbar';
 import HeroTerminal from './components/HeroTerminal';
 import TechStack from './components/TechStack';
@@ -12,14 +12,6 @@ import Footer from './components/Footer';
 function App() {
   const [page, setPage] = useState('home');
   const [darkMode, setDarkMode] = useState(true);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
 
   const handleNavigate = (targetPage, sectionId = null) => {
     setPage(targetPage);
@@ -43,7 +35,7 @@ function App() {
   return (
     <div
       className={`min-h-screen w-full font-mono transition-colors duration-500 ${
-        darkMode ? 'bg-[#050505] text-neutral-100' : 'bg-slate-50 text-neutral-900'
+        darkMode ? 'bg-[#050505] text-neutral-100' : 'bg-slate-100 text-neutral-900'
       }`}
     >
       <main className="p-6 md:p-12 flex flex-col items-center gap-12 max-w-5xl mx-auto">
@@ -55,41 +47,48 @@ function App() {
         />
 
         {page === 'contact' && (
-          <Contact onBack={() => handleNavigate('home')} />
+          <Contact darkMode={darkMode} onBack={() => handleNavigate('home')} />
         )}
 
         {page === 'coursework' && (
-          <Coursework onBack={() => handleNavigate('home')} />
+          <Coursework darkMode={darkMode} onBack={() => handleNavigate('home')} />
         )}
 
         {page === 'home' && (
           <>
-            <HeroTerminal onContactClick={() => handleNavigate('contact')} />
+            <HeroTerminal
+              darkMode={darkMode}
+              onContactClick={() => handleNavigate('contact')}
+            />
 
-            <TechStack />
+            <TechStack darkMode={darkMode} />
 
             <div className="w-full max-w-5xl flex justify-center -mt-4">
               <button
                 onClick={() => handleNavigate('coursework')}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/60 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer shadow-lg hover:scale-[1.02]"
+                className={`inline-flex items-center gap-2 px-6 py-3 border rounded-xl text-xs font-mono font-bold transition-all cursor-pointer shadow-lg hover:scale-[1.02] ${
+                  darkMode
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+                    : 'bg-white border-emerald-500/40 text-emerald-600 hover:bg-emerald-50'
+                }`}
               >
                 <span>$</span> view relevant coursework --list ↗
               </button>
             </div>
 
             <div id="experience" className="w-full">
-              <Experience />
+              <Experience darkMode={darkMode} />
             </div>
 
             <div id="projects" className="w-full">
-              <Projects />
+              <Projects darkMode={darkMode} />
             </div>
 
             <div id="credentials" className="w-full">
-              <Credentials />
+              <Credentials darkMode={darkMode} />
             </div>
 
-            <Footer />
+            <Footer darkMode={darkMode} />
           </>
         )}
       </main>
