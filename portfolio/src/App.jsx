@@ -7,6 +7,7 @@ import Experience from './components/Experience';
 import Projects from './components/Projects';
 import Credentials from './components/Credentials';
 import Contact from './components/Contact';
+import HelpTerminal from './components/HelpTerminal';
 import Footer from './components/Footer';
 
 function App() {
@@ -52,6 +53,14 @@ function App() {
 
         {page === 'coursework' && (
           <Coursework darkMode={darkMode} onBack={() => handleNavigate('home')} />
+        )}
+
+        {page === 'help' && (
+          <HelpTerminal
+            darkMode={darkMode}
+            onNavigate={handleNavigate}
+            onBack={() => handleNavigate('home')}
+          />
         )}
 
         {page === 'home' && (
