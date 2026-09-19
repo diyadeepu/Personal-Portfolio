@@ -243,7 +243,7 @@ export default function HelpTerminal({ onNavigate, onBack, darkMode }) {
                   darkMode ? 'text-emerald-400' : 'text-emerald-600'
                 }`}
               >
-                diya@portfolio ~ % Ask Diya about
+                diya@portfolio ~ % Ask Diya to
               </span>
               <input
                 ref={inputRef}
