@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import HeroTerminal from './components/HeroTerminal';
 import TechStack from './components/TechStack';
@@ -8,11 +8,22 @@ import Projects from './components/Projects';
 import Credentials from './components/Credentials';
 import Contact from './components/Contact';
 import HelpTerminal from './components/HelpTerminal';
+import LoadingScreen from './components/LoadingScreen';
 import Footer from './components/Footer';
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState('home');
   const [darkMode, setDarkMode] = useState(true);
+
+  // 3-second initial loading screen timer
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleNavigate = (targetPage, sectionId = null) => {
     setPage(targetPage);
@@ -32,6 +43,10 @@ function App() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+
+  if (isLoading) {
+    return <LoadingScreen darkMode={darkMode} />;
+  }
 
   return (
     <div
