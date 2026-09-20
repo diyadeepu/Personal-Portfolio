@@ -102,7 +102,7 @@ export default function Contact({ onBack, darkMode }) {
               # Location
             </span>
             <p className={`text-sm font-semibold ${darkMode ? 'text-neutral-200' : 'text-neutral-900'}`}>
-              Oregon State University | Corvallis & Lake Oswego, OR
+              Lake Oswego, OR
             </p>
           </div>
         </div>
