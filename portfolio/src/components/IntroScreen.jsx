@@ -14,13 +14,13 @@ export default function IntroScreen({ onProceed, darkMode }) {
     const video = videoRef.current;
     if (!video) return;
 
-    // Smooth animation loop for scrubbing frames & chroma keying red to black
+    // Smooth loop for scrubbing frames & chroma keying red background to black
     const renderLoop = () => {
-      if (video && video.readyState >= 2) {
-        // Smoothly interpolate current time towards target cursor time
+      if (video && video.readyState >= 1) {
+        // Smoothly interpolate video time towards cursor position target
         const diff = targetTimeRef.current - video.currentTime;
-        if (Math.abs(diff) > 0.005) {
-          video.currentTime += diff * 0.12; // Smooth spring motion
+        if (Math.abs(diff) > 0.002) {
+          video.currentTime += diff * 0.15;
         }
 
         const canvas = canvasRef.current;
@@ -36,14 +36,15 @@ export default function IntroScreen({ onProceed, darkMode }) {
             const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = frame.data;
 
-            // Remove red background (#FF0000) into pure black / transparent
+            // Remove red background (#FF0000) pixels
             for (let i = 0; i < data.length; i += 4) {
               const r = data[i];
               const g = data[i + 1];
               const b = data[i + 2];
 
-              if (r > 100 && r > g * 1.3 && r > b * 1.3) {
-                data[i + 3] = 0; // Alpha = 0 (transparent)
+              // Keying out bright red background
+              if (r > 100 && r > g * 1.35 && r > b * 1.35) {
+                data[i + 3] = 0; // Transparent
               }
             }
             ctx.putImageData(frame, 0, 0);
@@ -62,7 +63,7 @@ export default function IntroScreen({ onProceed, darkMode }) {
     };
   }, []);
 
-  // Mouse move tracking listener mapped across screen width
+  // Track cursor location mapped across screen width
   useEffect(() => {
     const handleMouseMove = (e) => {
       const { innerWidth } = window;
@@ -87,13 +88,14 @@ export default function IntroScreen({ onProceed, darkMode }) {
         preload="auto"
         muted
         playsInline
+        onLoadedMetadata={() => setVideoLoaded(true)}
         onLoadedData={() => setVideoLoaded(true)}
         onCanPlay={() => setVideoLoaded(true)}
         className="hidden"
       />
 
       <div className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-12 z-10 py-12">
-        {/* Left Side: Welcome Text & Action Button */}
+        {/* Left Side: Text and Action Button */}
         <div className="flex flex-col items-start space-y-6 max-w-lg text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 text-xs rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-bold">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -119,11 +121,11 @@ export default function IntroScreen({ onProceed, darkMode }) {
           </button>
         </div>
 
-        {/* Right Side: Cursor-Tracking Avatar */}
+        {/* Right Side: Cursor-Tracking Avatar Canvas */}
         <div className="relative w-full max-w-md aspect-square flex items-center justify-center">
           <div className="absolute inset-0 rounded-full bg-emerald-500/10 blur-3xl -z-10" />
 
-          <div className="w-full h-full rounded-3xl border border-neutral-800 bg-black overflow-hidden shadow-2xl flex items-center justify-center relative">
+          <div className="w-full h-full rounded-3xl border border-neutral-800 bg-[#050505] overflow-hidden shadow-2xl flex items-center justify-center relative">
             <canvas
               ref={canvasRef}
               className="w-full h-full object-cover pointer-events-none"
