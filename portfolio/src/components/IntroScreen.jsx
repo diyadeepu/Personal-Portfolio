@@ -1,10 +1,63 @@
 import { useEffect, useRef, useState } from 'react';
 
+// --- Tunables -------------------------------------------------------------
+const TARGET_FPS = 24;        // frames extracted per second of video
+const MAX_FRAMES = 80;        // memory cap (~1.2 MB per frame at 560px wide)
+const MAX_FRAME_WIDTH = 560;  // px; raise for sharper output, lower for less memory
+const KEY_HARD = 24;          // chroma distance below this -> fully transparent
+const KEY_SOFT = 38;          // between HARD and SOFT -> feathered edge
+const SMOOTHING = 0.16;       // 0..1 per 60fps tick; higher = snappier scrubbing
+const CORNER = 10;            // px block sampled in the top corners for the key color
+// --------------------------------------------------------------------------
+
+// Strip the red screen from one frame. Compares chroma (Cb/Cr) against the
+// key color sampled from the top-left and top-right corners of the frame.
+function keyFrame(img) {
+  const { data, width, height } = img;
+
+  let sr = 0, sg = 0, sb = 0, n = 0;
+  const sample = (x0) => {
+    for (let y = 0; y < CORNER; y++) {
+      for (let x = x0; x < x0 + CORNER; x++) {
+        const i = (y * width + x) * 4;
+        sr += data[i]; sg += data[i + 1]; sb += data[i + 2]; n++;
+      }
+    }
+  };
+  sample(0);
+  sample(width - CORNER);
+  sr /= n; sg /= n; sb /= n;
+
+  const keyCb = -0.169 * sr - 0.331 * sg + 0.5 * sb;
+  const keyCr = 0.5 * sr - 0.419 * sg - 0.081 * sb;
+  const hard2 = KEY_HARD * KEY_HARD;
+  const soft2 = KEY_SOFT * KEY_SOFT;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    const cb = -0.169 * r - 0.331 * g + 0.5 * b;
+    const cr = 0.5 * r - 0.419 * g - 0.081 * b;
+    const dist2 = (cb - keyCb) * (cb - keyCb) + (cr - keyCr) * (cr - keyCr);
+
+    if (dist2 <= hard2) {
+      data[i + 3] = 0; // Set pixel alpha to transparent
+    } else if (dist2 < soft2) {
+      const t = (Math.sqrt(dist2) - KEY_HARD) / (KEY_SOFT - KEY_HARD);
+      data[i + 3] = 255 * t; // feathered edge
+      data[i] = Math.min(r, Math.max(g, b) * 1.1); // remove red spill
+    }
+  }
+}
+
 export default function IntroScreen({ onProceed, darkMode }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
-  const targetTimeRef = useRef(0);
+  const [hasError, setHasError] = useState(false);
+  const targetTimeRef = useRef(0.5); // cursor position across the screen, 0..1
   const animationFrameRef = useRef(null);
 
   // Dynamic base path for Vite / GitHub Pages deployment
@@ -12,75 +65,116 @@ export default function IntroScreen({ onProceed, darkMode }) {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
 
-    // Warm up the browser video decoder immediately
+    const ctx = canvas.getContext('2d');
+    const work = document.createElement('canvas');
+    const workCtx = work.getContext('2d', { willReadFrequently: true });
+
+    let cancelled = false;
+    const frames = []; // ImageBitmaps with the red background already removed
+    let total = 0;
+    let pos = 0;
+    let started = false;
+    let lastShown = -1;
+    let lastTime = performance.now();
+
+    const waitFor = (event) =>
+      new Promise((resolve, reject) => {
+        const cleanup = () => {
+          video.removeEventListener(event, onOk);
+          video.removeEventListener('error', onFail);
+        };
+        const onOk = () => { cleanup(); resolve(); };
+        const onFail = () => { cleanup(); reject(new Error('video error')); };
+        video.addEventListener(event, onOk);
+        video.addEventListener('error', onFail);
+      });
+
+    const seekTo = (time) =>
+      new Promise((resolve) => {
+        const finish = () => {
+          clearTimeout(timer);
+          video.removeEventListener('seeked', finish);
+          resolve();
+        };
+        const timer = setTimeout(finish, 1500); // safety net if 'seeked' never fires
+        video.addEventListener('seeked', finish);
+        video.currentTime = time;
+      });
+
+    // Decode the video once: seek through it, key out the red, cache every frame
     const initializeDecoder = async () => {
       try {
-        await video.play();
-        video.pause();
-        setIsReady(true);
+        if (video.readyState < 1) await waitFor('loadedmetadata');
+        if (cancelled) return;
+
+        const duration = video.duration;
+        if (!Number.isFinite(duration) || duration <= 0) throw new Error('bad duration');
+
+        total = Math.max(2, Math.min(MAX_FRAMES, Math.round(duration * TARGET_FPS)));
+
+        const scale = Math.min(1, MAX_FRAME_WIDTH / video.videoWidth);
+        const w = Math.round(video.videoWidth * scale);
+        const h = Math.round(video.videoHeight * scale);
+        work.width = canvas.width = w;
+        work.height = canvas.height = h;
+
+        for (let i = 0; i < total; i++) {
+          await seekTo(0.001 + (i / (total - 1)) * Math.max(0, duration - 0.05));
+          if (cancelled) return;
+
+          workCtx.drawImage(video, 0, 0, w, h);
+          const frame = workCtx.getImageData(0, 0, w, h);
+          keyFrame(frame);
+          workCtx.putImageData(frame, 0, 0);
+
+          const bitmap = await createImageBitmap(work);
+          if (cancelled) { bitmap.close(); return; }
+          frames.push(bitmap);
+
+          if (frames.length === 1) setIsReady(true);
+        }
       } catch (err) {
-        // Fallback if browser autoplay policy delays playback
-        setIsReady(true);
+        console.error('IntroScreen video error:', err);
+        if (!cancelled) setHasError(true);
+      }
+    };
+
+    // Frame scrubbing loop: picks a cached frame, so it never waits on the decoder
+    const renderLoop = (now) => {
+      animationFrameRef.current = requestAnimationFrame(renderLoop);
+      if (!frames.length) return;
+
+      const dt = Math.min(64, now - lastTime);
+      lastTime = now;
+
+      // Smooth interpolation towards cursor target (frame-rate independent)
+      const target = targetTimeRef.current * (total - 1);
+      if (!started) {
+        pos = target;
+        started = true;
+      }
+      pos += (target - pos) * (1 - Math.pow(1 - SMOOTHING, dt / 16.67));
+
+      const index = Math.min(frames.length - 1, Math.max(0, Math.round(pos)));
+      if (index !== lastShown) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(frames[index], 0, 0);
+        lastShown = index;
       }
     };
 
     initializeDecoder();
-
-    // Frame scrubbing & red background chroma key loop
-    const renderLoop = () => {
-      const canvas = canvasRef.current;
-
-      if (video && video.readyState >= 1 && video.duration) {
-        // Smooth interpolation towards cursor target time
-        const diff = targetTimeRef.current - video.currentTime;
-        if (Math.abs(diff) > 0.001) {
-          video.currentTime += diff * 0.18;
-        }
-
-        // Draw frame to canvas and strip red background
-        if (canvas && video.videoWidth > 0 && video.videoHeight > 0) {
-          const ctx = canvas.getContext('2d', { willReadFrequently: true });
-          if (ctx) {
-            if (canvas.width !== video.videoWidth) {
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-            }
-
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            try {
-              const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-              const data = frame.data;
-
-              // Filter out bright red screen background
-              for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-
-                if (r > 100 && r > g * 1.35 && r > b * 1.35) {
-                  data[i + 3] = 0; // Set pixel alpha to transparent
-                }
-              }
-              ctx.putImageData(frame, 0, 0);
-            } catch (e) {
-              // Fail-safe protection
-            }
-          }
-        }
-      }
-
-      animationFrameRef.current = requestAnimationFrame(renderLoop);
-    };
-
     animationFrameRef.current = requestAnimationFrame(renderLoop);
 
     return () => {
+      cancelled = true;
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      frames.forEach((f) => f.close());
     };
   }, []);
 
@@ -88,12 +182,7 @@ export default function IntroScreen({ onProceed, darkMode }) {
   useEffect(() => {
     const handleMouseMove = (e) => {
       const { innerWidth } = window;
-      const video = videoRef.current;
-
-      if (video && video.duration) {
-        const progress = Math.max(0, Math.min(1, e.clientX / innerWidth));
-        targetTimeRef.current = progress * video.duration;
-      }
+      targetTimeRef.current = Math.max(0, Math.min(1, e.clientX / innerWidth));
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -134,27 +223,34 @@ export default function IntroScreen({ onProceed, darkMode }) {
           <div className="absolute inset-0 rounded-full bg-emerald-500/10 blur-3xl -z-10" />
 
           <div className="w-full h-full rounded-3xl border border-neutral-800 bg-[#050505] overflow-hidden shadow-2xl flex items-center justify-center relative">
-            {/* Primary Video Element (guarantees visible avatar rendering) */}
+            {/* Frame source only: 1px and invisible (never display:none, which
+                makes browsers suspend decoding). Visible output is the canvas. */}
             <video
               ref={videoRef}
               src={videoSrc}
               preload="auto"
               muted
               playsInline
-              onLoadedData={() => setIsReady(true)}
-              onCanPlay={() => setIsReady(true)}
-              className="w-full h-full object-cover pointer-events-none"
+              disablePictureInPicture
+              aria-hidden="true"
+              className="absolute left-0 top-0 h-px w-px opacity-0 pointer-events-none"
             />
 
-            {/* Overlay Canvas (strips red background dynamically) */}
+            {/* Visible Canvas (red background already removed from each frame) */}
             <canvas
               ref={canvasRef}
               className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"
             />
 
-            {!isReady && (
+            {!isReady && !hasError && (
               <div className="text-xs font-mono text-neutral-500 animate-pulse absolute z-20">
                 [ initializing character video... ]
+              </div>
+            )}
+
+            {hasError && (
+              <div className="text-xs font-mono text-red-400 absolute z-20 px-6 text-center">
+                [ couldn't load {videoSrc} - check the file path ]
               </div>
             )}
           </div>
