@@ -15,7 +15,7 @@ const DESPILL_KEEP = 0.15;     // 0..1 how much red survives in that band
 const CORNER = 10;             // px block sampled in the top corners for the key color
 
 // Cursor response
-const FLIP_X = false;          // set true if she turns AWAY from the cursor left/right
+const FLIP_X = true;          // set true if she turns AWAY from the cursor left/right
 const REACH = 1.25;            // >1 reaches the extreme poses before the window edge
 const SMOOTH_CURSOR = 0.14;    // seconds, first spring (higher = floatier)
 const SMOOTH_FRAME = 0.14;     // seconds, second spring on the frame position
