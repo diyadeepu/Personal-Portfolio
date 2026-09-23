@@ -9,10 +9,12 @@ import Credentials from './components/Credentials';
 import Contact from './components/Contact';
 import HelpTerminal from './components/HelpTerminal';
 import LoadingScreen from './components/LoadingScreen';
+import IntroScreen from './components/IntroScreen';
 import Footer from './components/Footer';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [showIntro, setShowIntro] = useState(true);
   const [page, setPage] = useState('home');
   const [darkMode, setDarkMode] = useState(true);
 
@@ -26,6 +28,7 @@ function App() {
   }, []);
 
   const handleNavigate = (targetPage, sectionId = null) => {
+    setShowIntro(false);
     setPage(targetPage);
 
     if (targetPage === 'home') {
@@ -44,8 +47,27 @@ function App() {
     }
   };
 
+  const handleProceedFromIntro = () => {
+    setShowIntro(false);
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
+
   if (isLoading) {
     return <LoadingScreen darkMode={darkMode} />;
+  }
+
+  if (showIntro && page === 'home') {
+    return (
+      <div
+        className={`min-h-screen w-full transition-colors duration-500 ${
+          darkMode ? 'bg-[#050505] text-neutral-100' : 'bg-slate-100 text-neutral-900'
+        }`}
+      >
+        <IntroScreen onProceed={handleProceedFromIntro} darkMode={darkMode} />
+      </div>
+    );
   }
 
   return (
