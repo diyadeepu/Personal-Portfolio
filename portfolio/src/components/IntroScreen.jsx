@@ -7,50 +7,60 @@ export default function IntroScreen({ onProceed, darkMode }) {
   const targetTimeRef = useRef(0);
   const animationFrameRef = useRef(null);
 
-  // Dynamic path resolution for Vite / GitHub Pages subpaths
+  // Dynamic base URL for Vite & GitHub Pages
   const videoSrc = `${import.meta.env.BASE_URL}videos/character.mp4`;
 
+  // Force video loaded state fallback after 1.5 seconds just in case
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    const fallbackTimer = setTimeout(() => {
+      setVideoLoaded(true);
+    }, 1500);
 
-    // Smooth loop for scrubbing frames & chroma keying red background to black
+    return () => clearTimeout(fallbackTimer);
+  }, []);
+
+  // Frame processing loop
+  useEffect(() => {
     const renderLoop = () => {
-      if (video && video.readyState >= 1) {
-        // Smoothly interpolate video time towards cursor position target
-        const diff = targetTimeRef.current - video.currentTime;
-        if (Math.abs(diff) > 0.002) {
-          video.currentTime += diff * 0.15;
-        }
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
 
-        const canvas = canvasRef.current;
-        if (canvas) {
-          const ctx = canvas.getContext('2d', { willReadFrequently: true });
-          if (ctx && video.videoWidth > 0) {
-            if (canvas.width !== video.videoWidth) {
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-            }
-
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = frame.data;
-
-            // Remove red background (#FF0000) pixels
-            for (let i = 0; i < data.length; i += 4) {
-              const r = data[i];
-              const g = data[i + 1];
-              const b = data[i + 2];
-
-              // Keying out bright red background
-              if (r > 100 && r > g * 1.35 && r > b * 1.35) {
-                data[i + 3] = 0; // Transparent
-              }
-            }
-            ctx.putImageData(frame, 0, 0);
+      if (video && canvas) {
+        // Scrub video currentTime toward cursor target position
+        if (video.duration) {
+          const diff = targetTimeRef.current - video.currentTime;
+          if (Math.abs(diff) > 0.001) {
+            video.currentTime += diff * 0.2; // Smooth spring interpolation
           }
         }
+
+        // Draw video frame to canvas and key out red background
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        if (ctx && video.videoWidth > 0 && video.videoHeight > 0) {
+          if (canvas.width !== video.videoWidth) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+          }
+
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = frame.data;
+
+          // Chroma-key algorithm: convert pure red background to black / transparent
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+
+            // Target bright red pixels
+            if (r > 90 && r > g * 1.3 && r > b * 1.3) {
+              data[i + 3] = 0; // Alpha = 0 (transparent)
+            }
+          }
+          ctx.putImageData(frame, 0, 0);
+        }
       }
+
       animationFrameRef.current = requestAnimationFrame(renderLoop);
     };
 
@@ -63,7 +73,7 @@ export default function IntroScreen({ onProceed, darkMode }) {
     };
   }, []);
 
-  // Track cursor location mapped across screen width
+  // Mouse tracking listener mapped across screen width
   useEffect(() => {
     const handleMouseMove = (e) => {
       const { innerWidth } = window;
@@ -79,23 +89,28 @@ export default function IntroScreen({ onProceed, darkMode }) {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  const handleVideoReady = () => {
+    setVideoLoaded(true);
+  };
+
   return (
     <section className="min-h-screen w-full flex items-center justify-center px-6 md:px-16 font-mono relative overflow-hidden bg-[#050505] text-white">
-      {/* Hidden Video Source */}
+      {/* Offscreen video source (DO NOT use hidden/display:none or browsers stop decoding frames) */}
       <video
         ref={videoRef}
         src={videoSrc}
         preload="auto"
         muted
         playsInline
-        onLoadedMetadata={() => setVideoLoaded(true)}
-        onLoadedData={() => setVideoLoaded(true)}
-        onCanPlay={() => setVideoLoaded(true)}
-        className="hidden"
+        onLoadedMetadata={handleVideoReady}
+        onLoadedData={handleVideoReady}
+        onCanPlay={handleVideoReady}
+        onCanPlayThrough={handleVideoReady}
+        className="absolute top-0 left-0 w-1 h-1 opacity-0 pointer-events-none -z-50"
       />
 
       <div className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-12 z-10 py-12">
-        {/* Left Side: Text and Action Button */}
+        {/* Left Side: Welcome Text and Action Button */}
         <div className="flex flex-col items-start space-y-6 max-w-lg text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 text-xs rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-bold">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -121,7 +136,7 @@ export default function IntroScreen({ onProceed, darkMode }) {
           </button>
         </div>
 
-        {/* Right Side: Cursor-Tracking Avatar Canvas */}
+        {/* Right Side: Cursor-Tracking Interactive Avatar Canvas */}
         <div className="relative w-full max-w-md aspect-square flex items-center justify-center">
           <div className="absolute inset-0 rounded-full bg-emerald-500/10 blur-3xl -z-10" />
 
