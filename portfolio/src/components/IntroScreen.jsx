@@ -1,43 +1,95 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function IntroScreen({ onProceed, darkMode }) {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
-  // Track mouse coordinates normalized from -1 to 1 (0,0 is center)
+  // Real-time Chroma Key Algorithm to strip red background to black/transparent
+  const processChromaKey = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+
+    if (video.videoWidth && video.videoHeight) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = frame.data;
+
+      // Filter out bright red background pixels
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        // Red screen detection threshold
+        if (r > 110 && r > g * 1.35 && r > b * 1.35) {
+          data[i + 3] = 0; // Set alpha to 0 (transparent)
+        }
+      }
+      ctx.putImageData(frame, 0, 0);
+    }
+  };
+
+  // Cursor tracking: scrub video currentTime based on cursor X/Y coordinates
   useEffect(() => {
     const handleMouseMove = (e) => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth) * 2 - 1;
-      const y = (e.clientY / innerHeight) * 2 - 1;
-      setMousePos({ x, y });
+      const { innerWidth } = window;
+      const video = videoRef.current;
+
+      if (video && video.duration) {
+        // Calculate normalized cursor position (0 to 1 across screen width)
+        const progress = Math.max(0, Math.min(1, e.clientX / innerWidth));
+
+        // Map cursor position to video playback time
+        const targetTime = progress * video.duration;
+        if (!isNaN(targetTime)) {
+          video.currentTime = targetTime;
+        }
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // 3D CSS rotation vector following cursor movement
-  const headTransform = {
-    transform: `perspective(1000px) rotateY(${mousePos.x * 22}deg) rotateX(${-mousePos.y * 18}deg) translate3d(${mousePos.x * 14}px, ${mousePos.y * 14}px, 30px)`,
-    transition: 'transform 0.08s ease-out',
-  };
-
   return (
-    <section className="min-h-screen w-full flex flex-col justify-center items-center px-6 md:px-16 font-mono relative overflow-hidden">
-      <div className="w-full max-w-6xl flex flex-col-reverse md:flex-row items-center justify-between gap-12 my-auto z-10">
+    <section className="min-h-screen w-full flex items-center justify-center px-6 md:px-16 font-mono relative overflow-hidden bg-[#050505] text-white">
+      {/* Hidden Video Source Element for Frame Scrubbing */}
+      <video
+        ref={videoRef}
+        src="/videos/character.mp4"
+        preload="auto"
+        muted
+        playsInline
+        onLoadedData={() => {
+          setVideoLoaded(true);
+          processChromaKey();
+        }}
+        onSeeked={processChromaKey}
+        className="hidden"
+      />
 
-        {/* Left Side: Welcome Text & Action Button */}
+      <div className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-12 z-10 py-12">
+        {/* Left Side: Text and Action Button */}
         <div className="flex flex-col items-start space-y-6 max-w-lg text-left">
-          <div className="inline-block px-3 py-1 text-xs rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-bold">
-            ⚡ Interactive Terminal Portfolio
+          <div className="inline-flex items-center gap-2 px-3 py-1 text-xs rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-bold">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            Interactive Portfolio
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight">
             Hi, I'm <span className="text-emerald-400">Diya Deepu!</span>
           </h1>
 
-          <p className={`text-sm sm:text-base leading-relaxed ${darkMode ? 'text-neutral-400' : 'text-neutral-600'}`}>
-            Welcome to my interactive macOS-inspired workspace. Explore my software projects, undergraduate research, coursework, and credentials.
+          <p className="text-sm sm:text-base leading-relaxed text-neutral-400">
+            Welcome to my interactive workspace. Move your cursor around to interact with the screen.
           </p>
 
           <button
@@ -45,61 +97,30 @@ export default function IntroScreen({ onProceed, darkMode }) {
             className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-xl text-sm font-bold bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all duration-300 cursor-pointer hover:scale-[1.03] active:scale-[0.98]"
           >
             <span>click here to learn more about me</span>
-            <span className="text-base transition-transform duration-300 group-hover:translate-y-1">↓</span>
+            <span className="text-base transition-transform duration-300 group-hover:translate-y-1">
+              ↓
+            </span>
           </button>
         </div>
 
-        {/* Right Side: Cursor Tracking Interactive Avatar */}
+        {/* Right Side: Cursor-Tracking Avatar with Black Background */}
         <div className="relative w-full max-w-md aspect-square flex items-center justify-center">
-          {/* Subtle Ambient Green Glow Behind Avatar */}
           <div className="absolute inset-0 rounded-full bg-emerald-500/10 blur-3xl -z-10" />
 
-          <div
-            className={`w-full h-full rounded-3xl border overflow-hidden shadow-2xl flex items-center justify-center relative transition-colors duration-500 ${
-              darkMode ? 'bg-black border-neutral-800' : 'bg-neutral-950 border-neutral-800'
-            }`}
-          >
-            {/* Interactive Portrait Container */}
-            <div
-              style={headTransform}
-              className="relative w-full h-full flex items-center justify-center p-4 select-none"
-            >
-              {/* Optional Video Asset (If you have an mp4 video file placed in /public/videos/avatar.mp4) */}
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover rounded-2xl pointer-events-none"
-                src="/videos/avatar.mp4"
-                onError={(e) => {
-                  // Fallback vector graphic portrait if video file is not present
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
+          <div className="w-full h-full rounded-3xl border border-neutral-800 bg-black overflow-hidden shadow-2xl flex items-center justify-center relative">
+            {/* Chroma Keyed Video Canvas */}
+            <canvas
+              ref={canvasRef}
+              className="w-full h-full object-cover pointer-events-none"
+            />
 
-              {/* Fallback Avatar Graphics */}
-              <div id="avatar-fallback" className="flex flex-col items-center justify-center space-y-4 text-center">
-                <div className="w-40 h-40 rounded-full border-2 border-emerald-400/80 p-2 relative flex items-center justify-center bg-neutral-900 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                  <div className="w-full h-full rounded-full bg-emerald-500/20 flex items-center justify-center text-4xl">
-                    👩‍💻
-                  </div>
-                  {/* Dynamic Pupil / Eye Direction Dots */}
-                  <div
-                    className="absolute w-3 h-3 rounded-full bg-emerald-400 shadow-sm"
-                    style={{
-                      transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 12}px)`,
-                    }}
-                  />
-                </div>
-                <span className="text-xs font-mono text-emerald-400 font-bold">
-                  [ Cursor Tracking Active ]
-                </span>
+            {!videoLoaded && (
+              <div className="text-xs font-mono text-neutral-500 animate-pulse absolute">
+                [ loading character animation... ]
               </div>
-            </div>
+            )}
           </div>
         </div>
-
       </div>
     </section>
   );
