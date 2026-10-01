@@ -6,11 +6,11 @@ export default function HeroTerminal({ onContactClick, darkMode, startTyping }) 
   const [displayedText, setDisplayedText] = useState('');
 
   useEffect(() => {
-    // DO NOT start typing until startTyping becomes true
+    // Prevent typing animation from starting until startTyping is true
     if (!startTyping) return;
 
     let index = 0;
-    setDisplayedText(''); // Reset text just before it starts typing
+    setDisplayedText(''); // Reset text right before typing starts
 
     const typingInterval = setInterval(() => {
       if (index < subtitleText.length) {
