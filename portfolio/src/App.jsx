@@ -16,21 +16,19 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showIntro, setShowIntro] = useState(true);
   const [isSlidingUp, setIsSlidingUp] = useState(false);
+  const [startTerminalTyping, setStartTerminalTyping] = useState(false); // NEW STATE
   const [page, setPage] = useState('home');
   const [darkMode, setDarkMode] = useState(true);
 
-  // 3-second initial loading screen timer
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
-
     return () => clearTimeout(timer);
   }, []);
 
   const handleNavigate = (targetPage, sectionId = null) => {
     setPage(targetPage);
-
     if (targetPage === 'home') {
       if (sectionId) {
         setTimeout(() => {
@@ -47,14 +45,14 @@ function App() {
     }
   };
 
-  // Trigger smooth slide-up page transition
   const handleProceedFromIntro = () => {
     setIsSlidingUp(true);
     setTimeout(() => {
       setShowIntro(false);
       setIsSlidingUp(false);
+      setStartTerminalTyping(true); // START TYPING AFTER SLIDE-UP FINISHES
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 800); // Duration matches CSS duration-800
+    }, 800);
   };
 
   if (isLoading) {
@@ -63,7 +61,7 @@ function App() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#050505] overflow-x-hidden">
-      {/* Slide-Up Animated Intro Overlay Page */}
+      {/* Intro Overlay */}
       {showIntro && (
         <div
           className={`fixed inset-0 z-50 transition-transform duration-800 ease-in-out ${
@@ -74,7 +72,7 @@ function App() {
         </div>
       )}
 
-      {/* Main Portfolio Page */}
+      {/* Main Portfolio */}
       <div
         className={`min-h-screen w-full font-mono transition-colors duration-500 ${
           darkMode ? 'bg-[#050505] text-neutral-100' : 'bg-slate-100 text-neutral-900'
@@ -106,9 +104,11 @@ function App() {
 
           {page === 'home' && (
             <>
+              {/* PASS START TYPING STATE AS PROP */}
               <HeroTerminal
                 darkMode={darkMode}
                 onContactClick={() => handleNavigate('contact')}
+                startTyping={startTerminalTyping}
               />
 
               <TechStack darkMode={darkMode} />
