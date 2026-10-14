@@ -13,7 +13,8 @@ import IntroScreen from './components/IntroScreen';
 import Footer from './components/Footer';
 import ScrollHighlight from './components/ScrollHighlight';
 import CustomCursor from './components/CustomCursor';
-import MagneticWrapper from './components/MagneticWrapper'; // IMPORT ADDED
+import MagneticWrapper from './components/MagneticWrapper';
+import CommandPalette from './components/CommandPalette'; // IMPORT ADDED HERE
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -65,6 +66,13 @@ function App() {
   return (
     <div className="relative min-h-screen w-full bg-[#050505] overflow-x-hidden cursor-none">
       <CustomCursor darkMode={darkMode} />
+
+      {/* COMMAND PALETTE MOUNTED HERE */}
+      <CommandPalette
+        onNavigate={handleNavigate}
+        darkMode={darkMode}
+        onToggleTheme={() => setDarkMode(!darkMode)}
+      />
 
       {/* Intro Overlay */}
       {showIntro && (
@@ -122,7 +130,6 @@ function App() {
               </div>
 
               <div className="w-full max-w-5xl flex justify-center -mt-4 z-10 relative">
-                {/* MAGNETIC WRAPPER APPLIED HERE */}
                 <MagneticWrapper>
                   <button
                     onClick={() => handleNavigate('coursework')}
