@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-// Added onToggleGraphMode to props
-export default function CommandPalette({ onNavigate, darkMode, onToggleTheme, onToggleGraphMode }) {
+export default function CommandPalette({ onNavigate, darkMode, onToggleTheme }) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -23,10 +22,6 @@ export default function CommandPalette({ onNavigate, darkMode, onToggleTheme, on
         link.click();
         document.body.removeChild(link);
     }},
-    // Added graph toggle command
-    { id: 'graph', title: '> toggle_graph_mode', action: () => {
-        onToggleGraphMode();
-    }}
   ];
 
   const filteredCommands = commands.filter((cmd) =>
