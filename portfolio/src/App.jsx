@@ -11,12 +11,13 @@ import HelpTerminal from './components/HelpTerminal';
 import LoadingScreen from './components/LoadingScreen';
 import IntroScreen from './components/IntroScreen';
 import Footer from './components/Footer';
+import ScrollHighlight from './components/ScrollHighlight'; // IMPORT ADDED HERE
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showIntro, setShowIntro] = useState(true);
   const [isSlidingUp, setIsSlidingUp] = useState(false);
-  const [startTerminalTyping, setStartTerminalTyping] = useState(false); // NEW STATE
+  const [startTerminalTyping, setStartTerminalTyping] = useState(false);
   const [page, setPage] = useState('home');
   const [darkMode, setDarkMode] = useState(true);
 
@@ -104,16 +105,20 @@ function App() {
 
           {page === 'home' && (
             <>
-              {/* PASS START TYPING STATE AS PROP */}
               <HeroTerminal
                 darkMode={darkMode}
                 onContactClick={() => handleNavigate('contact')}
                 startTyping={startTerminalTyping}
               />
 
-              <TechStack darkMode={darkMode} />
+              {/* WRAPPED TECH STACK */}
+              <div id="techstack" className="w-full">
+                <ScrollHighlight darkMode={darkMode}>
+                  <TechStack darkMode={darkMode} />
+                </ScrollHighlight>
+              </div>
 
-              <div className="w-full max-w-5xl flex justify-center -mt-4">
+              <div className="w-full max-w-5xl flex justify-center -mt-4 z-10 relative">
                 <button
                   onClick={() => handleNavigate('coursework')}
                   className={`inline-flex items-center gap-2 px-6 py-3 border rounded-xl text-xs font-mono font-bold transition-all cursor-pointer shadow-lg hover:scale-[1.02] ${
@@ -126,16 +131,23 @@ function App() {
                 </button>
               </div>
 
+              {/* WRAPPED EXPERIENCE */}
               <div id="experience" className="w-full">
-                <Experience darkMode={darkMode} />
+                <ScrollHighlight darkMode={darkMode}>
+                  <Experience darkMode={darkMode} />
+                </ScrollHighlight>
               </div>
 
+              {/* UNWRAPPED PROJECTS (You mentioned this already has its own highlight logic) */}
               <div id="projects" className="w-full">
                 <Projects darkMode={darkMode} />
               </div>
 
+              {/* WRAPPED CREDENTIALS */}
               <div id="credentials" className="w-full">
-                <Credentials darkMode={darkMode} />
+                <ScrollHighlight darkMode={darkMode}>
+                  <Credentials darkMode={darkMode} />
+                </ScrollHighlight>
               </div>
 
               <Footer darkMode={darkMode} />
