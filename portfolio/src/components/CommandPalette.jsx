@@ -34,7 +34,6 @@ export default function CommandPalette({ onNavigate, darkMode, onToggleTheme }) 
       }
     };
 
-    // Custom event listener triggered by the Navbar button
     const handleCustomOpen = () => setIsOpen(true);
 
     window.addEventListener('keydown', handleKeyDown);
@@ -88,4 +87,44 @@ export default function CommandPalette({ onNavigate, darkMode, onToggleTheme }) 
           <span className="text-emerald-500 font-bold mr-3">{'>'}</span>
           <input
             ref={inputRef}
-            value={
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleInputKeyDown}
+            placeholder="Type a command or search..."
+            className="w-full bg-transparent outline-none text-sm sm:text-base placeholder-neutral-600"
+          />
+          <div className="flex gap-2">
+            <span className={`text-xs px-2 py-1 rounded border ${darkMode ? 'border-neutral-700 text-neutral-400 bg-neutral-900' : 'border-neutral-300 text-neutral-500 bg-neutral-100'}`}>ESC</span>
+          </div>
+        </div>
+
+        <div className="max-h-[50vh] overflow-y-auto py-2">
+          {filteredCommands.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm text-neutral-500">
+              zsh: command not found: {query}
+            </div>
+          ) : (
+            filteredCommands.map((cmd, index) => (
+              <button
+                key={cmd.id}
+                onClick={() => {
+                  cmd.action();
+                  setIsOpen(false);
+                }}
+                onMouseEnter={() => setSelectedIndex(index)}
+                className={`w-full text-left px-5 py-3 text-sm flex justify-between items-center transition-colors cursor-pointer ${
+                  index === selectedIndex 
+                    ? (darkMode ? 'bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-500' : 'bg-emerald-50 text-emerald-700 border-l-2 border-emerald-500') 
+                    : (darkMode ? 'border-l-2 border-transparent hover:bg-neutral-900/50 text-neutral-400' : 'border-l-2 border-transparent hover:bg-neutral-50 text-neutral-600')
+                }`}
+              >
+                <span>{cmd.title}</span>
+                {index === selectedIndex && <span>⏎</span>}
+              </button>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
