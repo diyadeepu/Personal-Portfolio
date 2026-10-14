@@ -31,7 +31,9 @@ export default function GlowCard({ children, darkMode, className = '', onMouseEn
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={`relative overflow-hidden rounded-xl border transition-colors duration-500 ${
-        darkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-200'
+        darkMode 
+          ? 'bg-[#0a0a0a] border-neutral-800 hover:border-emerald-500/50' 
+          : 'bg-white border-neutral-200 hover:border-emerald-400/60' // Slightly stronger border for light mode
       } ${className}`}
       {...props}
     >
@@ -39,8 +41,9 @@ export default function GlowCard({ children, darkMode, className = '', onMouseEn
         className="pointer-events-none absolute -inset-px transition-opacity duration-300"
         style={{
           opacity,
+          // Boosted light mode glow opacity from 0.05 to 0.15 so it doesn't wash out on white
           background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${
-            darkMode ? 'rgba(16, 185, 129, 0.12)' : 'rgba(16, 185, 129, 0.05)'
+            darkMode ? 'rgba(16, 185, 129, 0.12)' : 'rgba(16, 185, 129, 0.15)'
           }, transparent 40%)`,
         }}
       />
