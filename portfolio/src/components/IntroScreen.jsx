@@ -1,3 +1,5 @@
+import MagneticWrapper from './MagneticWrapper';
+
 export default function IntroScreen({ onProceed, darkMode }) {
   // Path for GitHub Pages deployment
   const imgSrc = `${import.meta.env.BASE_URL}ddchat.png`;
@@ -17,15 +19,17 @@ export default function IntroScreen({ onProceed, darkMode }) {
             Hi, I'm <br /><span className="text-emerald-400">Diya Deepu</span>
           </h1>
 
-          <button
-            onClick={onProceed}
-            className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-xl text-sm font-bold bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all duration-300 cursor-pointer hover:scale-[1.03] active:scale-[0.98]"
-          >
-            <span>click here to learn more about me</span>
-            <span className="text-base transition-transform duration-300 group-hover:translate-y-1">
-              ↓
-            </span>
-          </button>
+          <MagneticWrapper>
+            <button
+              onClick={onProceed}
+              className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-xl text-sm font-bold bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all duration-300 cursor-pointer hover:scale-[1.03] active:scale-[0.98]"
+            >
+              <span>click here to learn more about me</span>
+              <span className="text-base transition-transform duration-300 group-hover:translate-y-1">
+                ↓
+              </span>
+            </button>
+          </MagneticWrapper>
         </div>
 
         {/* Right Side: Static Image */}

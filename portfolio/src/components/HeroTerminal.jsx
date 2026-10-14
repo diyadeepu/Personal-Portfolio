@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import MagneticWrapper from './MagneticWrapper';
 
 export default function HeroTerminal({ onContactClick, darkMode, startTyping }) {
   const subtitleText =
@@ -96,16 +97,18 @@ export default function HeroTerminal({ onContactClick, darkMode, startTyping }) 
           </p>
 
           <div className="pt-2 flex flex-wrap gap-3">
-            <button
-              onClick={onContactClick}
-              className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                darkMode
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
-                  : 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100'
-              }`}
-            >
-              <span>$</span> contact --info ↗
-            </button>
+            <MagneticWrapper>
+              <button
+                onClick={onContactClick}
+                className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  darkMode
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+                    : 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100'
+                }`}
+              >
+                <span>$</span> contact --info ↗
+              </button>
+            </MagneticWrapper>
           </div>
         </div>
       </div>

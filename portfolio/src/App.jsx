@@ -13,6 +13,7 @@ import IntroScreen from './components/IntroScreen';
 import Footer from './components/Footer';
 import ScrollHighlight from './components/ScrollHighlight';
 import CustomCursor from './components/CustomCursor';
+import MagneticWrapper from './components/MagneticWrapper'; // IMPORT ADDED
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -114,7 +115,6 @@ function App() {
                 startTyping={startTerminalTyping}
               />
 
-              {/* WRAPPED TECH STACK */}
               <div id="techstack" className="w-full">
                 <ScrollHighlight darkMode={darkMode}>
                   <TechStack darkMode={darkMode} />
@@ -122,31 +122,31 @@ function App() {
               </div>
 
               <div className="w-full max-w-5xl flex justify-center -mt-4 z-10 relative">
-                <button
-                  onClick={() => handleNavigate('coursework')}
-                  className={`inline-flex items-center gap-2 px-6 py-3 border rounded-xl text-xs font-mono font-bold transition-all cursor-pointer shadow-lg hover:scale-[1.02] ${
-                    darkMode
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
-                      : 'bg-white border-emerald-500/40 text-emerald-600 hover:bg-emerald-50'
-                  }`}
-                >
-                  <span>$</span> view relevant coursework --list ↗
-                </button>
+                {/* MAGNETIC WRAPPER APPLIED HERE */}
+                <MagneticWrapper>
+                  <button
+                    onClick={() => handleNavigate('coursework')}
+                    className={`inline-flex items-center gap-2 px-6 py-3 border rounded-xl text-xs font-mono font-bold transition-all cursor-pointer shadow-lg hover:scale-[1.02] ${
+                      darkMode
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+                        : 'bg-white border-emerald-500/40 text-emerald-600 hover:bg-emerald-50'
+                    }`}
+                  >
+                    <span>$</span> view relevant coursework --list ↗
+                  </button>
+                </MagneticWrapper>
               </div>
 
-              {/* WRAPPED EXPERIENCE */}
               <div id="experience" className="w-full">
                 <ScrollHighlight darkMode={darkMode}>
                   <Experience darkMode={darkMode} />
                 </ScrollHighlight>
               </div>
 
-              {/* UNWRAPPED PROJECTS */}
               <div id="projects" className="w-full">
                 <Projects darkMode={darkMode} />
               </div>
 
-              {/* WRAPPED CREDENTIALS */}
               <div id="credentials" className="w-full">
                 <ScrollHighlight darkMode={darkMode}>
                   <Credentials darkMode={darkMode} />
