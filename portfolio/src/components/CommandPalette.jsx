@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
-export default function CommandPalette({ onNavigate, darkMode, onToggleTheme }) {
+// Added onToggleGraphMode to props
+export default function CommandPalette({ onNavigate, darkMode, onToggleTheme, onToggleGraphMode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -15,7 +16,6 @@ export default function CommandPalette({ onNavigate, darkMode, onToggleTheme }) 
     { id: 'help', title: '> ./help.sh', action: () => onNavigate('help') },
     { id: 'theme', title: '> toggle_dark_mode', action: () => onToggleTheme() },
     { id: 'resume', title: '> download_resume.pdf', action: () => {
-        // Triggers a native file download using Vite's base URL
         const link = document.createElement('a');
         link.href = `${import.meta.env.BASE_URL}Diya_Deepu_Resume.pdf`;
         link.download = 'Diya_Deepu_Resume.pdf';
@@ -23,6 +23,10 @@ export default function CommandPalette({ onNavigate, darkMode, onToggleTheme }) 
         link.click();
         document.body.removeChild(link);
     }},
+    // Added graph toggle command
+    { id: 'graph', title: '> toggle_graph_mode', action: () => {
+        onToggleGraphMode();
+    }}
   ];
 
   const filteredCommands = commands.filter((cmd) =>

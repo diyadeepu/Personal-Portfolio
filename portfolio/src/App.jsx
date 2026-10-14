@@ -14,7 +14,8 @@ import Footer from './components/Footer';
 import ScrollHighlight from './components/ScrollHighlight';
 import CustomCursor from './components/CustomCursor';
 import MagneticWrapper from './components/MagneticWrapper';
-import CommandPalette from './components/CommandPalette'; // IMPORT ADDED HERE
+import CommandPalette from './components/CommandPalette';
+import GraphMode from './components/GraphMode'; // IMPORT ADDED HERE
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +24,7 @@ function App() {
   const [startTerminalTyping, setStartTerminalTyping] = useState(false);
   const [page, setPage] = useState('home');
   const [darkMode, setDarkMode] = useState(true);
+  const [isGraphMode, setIsGraphMode] = useState(false); // GRAPH STATE ADDED HERE
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -63,6 +65,17 @@ function App() {
     return <LoadingScreen darkMode={darkMode} />;
   }
 
+  // GRAPH MODE RENDER INTERCEPTOR
+  if (isGraphMode) {
+    return (
+      <GraphMode
+        darkMode={darkMode}
+        onToggleTheme={() => setDarkMode(!darkMode)}
+        onClose={() => setIsGraphMode(false)}
+      />
+    );
+  }
+
   return (
     <div className="relative min-h-screen w-full bg-[#050505] overflow-x-hidden cursor-none">
       <CustomCursor darkMode={darkMode} />
@@ -72,6 +85,7 @@ function App() {
         onNavigate={handleNavigate}
         darkMode={darkMode}
         onToggleTheme={() => setDarkMode(!darkMode)}
+        onToggleGraphMode={() => setIsGraphMode(true)} // GRAPH PROP ADDED HERE
       />
 
       {/* Intro Overlay */}
