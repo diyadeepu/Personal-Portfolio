@@ -1,3 +1,6 @@
+import ScrambleText from './ScrambleText';
+import GlowCard from './GlowCard';
+
 export default function Experience({ darkMode }) {
   const experiences = [
     {
@@ -33,17 +36,16 @@ export default function Experience({ darkMode }) {
     <section className="w-full max-w-5xl font-mono">
       <div className="mb-6">
         <p className={`text-sm font-bold uppercase tracking-[0.25em] ${darkMode ? 'text-white' : 'text-neutral-900'}`}>
-          $ experience
+          $ <ScrambleText text="experience" />
         </p>
       </div>
 
       <div className="space-y-6">
         {experiences.map((exp) => (
-          <div
+          <GlowCard
             key={exp.role + exp.company}
-            className={`border rounded-xl p-6 transition-colors duration-500 ${
-              darkMode ? 'bg-black border-neutral-800 shadow-lg' : 'bg-white border-neutral-300 shadow-md'
-            }`}
+            darkMode={darkMode}
+            className={`p-6 ${darkMode ? 'shadow-lg' : 'shadow-md'}`}
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-3">
               <h3 className={`text-base font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
@@ -68,7 +70,7 @@ export default function Experience({ darkMode }) {
                 </li>
               ))}
             </ul>
-          </div>
+          </GlowCard>
         ))}
       </div>
     </section>

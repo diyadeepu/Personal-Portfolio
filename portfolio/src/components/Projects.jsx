@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import ScrambleText from './ScrambleText';
+import GlowCard from './GlowCard';
 
 const projects = [
   {
@@ -38,14 +40,15 @@ export default function Projects({ darkMode }) {
             darkMode ? 'text-white' : 'text-neutral-900'
           }`}
         >
-          $ featured-projects
+          $ <ScrambleText text="featured-projects" />
         </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         {projects.map((project, index) => (
-          <div
+          <GlowCard
             key={project.title}
+            darkMode={darkMode}
             onMouseEnter={() => project.video && setActiveProject(project)}
             onMouseLeave={() => setActiveProject(null)}
             className={`border rounded-xl p-6 transition-all flex flex-col justify-between ${
@@ -135,7 +138,7 @@ export default function Projects({ darkMode }) {
                 </span>
               )}
             </div>
-          </div>
+          </GlowCard>
         ))}
       </div>
 
