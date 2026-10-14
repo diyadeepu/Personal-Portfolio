@@ -10,38 +10,60 @@ export default function Navbar({ activePage, activeSection, onNavigate, darkMode
 
   return (
     <header className="w-full max-w-5xl flex justify-between items-center py-4 font-mono">
-      {/* Theme Toggle Button */}
-      <button
-        onClick={onToggleTheme}
-        aria-label="Toggle theme"
-        className={`p-2.5 rounded-full border transition-all duration-500 cursor-pointer ${
-          darkMode
-            ? 'bg-black/80 border-neutral-800 text-neutral-300 hover:text-emerald-400 hover:border-emerald-500/50'
-            : 'bg-white border-neutral-300 text-neutral-700 hover:text-emerald-600 hover:border-emerald-500/50 shadow-md'
-        }`}
-      >
-        {darkMode ? (
-          /* Sun Icon */
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="5" strokeWidth="2" />
-            <path
-              strokeWidth="2"
-              strokeLinecap="round"
-              d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
-            />
-          </svg>
-        ) : (
-          /* Moon Icon */
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-            />
-          </svg>
-        )}
-      </button>
+
+      {/* Left Side: Action Buttons */}
+      <div className="flex items-center gap-3 z-10">
+
+        {/* Theme Toggle Button */}
+        <button
+          onClick={onToggleTheme}
+          aria-label="Toggle theme"
+          className={`p-2.5 rounded-full border transition-all duration-500 cursor-pointer ${
+            darkMode
+              ? 'bg-black/80 border-neutral-800 text-neutral-300 hover:text-emerald-400 hover:border-emerald-500/50'
+              : 'bg-white border-neutral-300 text-neutral-700 hover:text-emerald-600 hover:border-emerald-500/50 shadow-md'
+          }`}
+        >
+          {darkMode ? (
+            /* Sun Icon */
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5" strokeWidth="2" />
+              <path
+                strokeWidth="2"
+                strokeLinecap="round"
+                d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              />
+            </svg>
+          ) : (
+            /* Moon Icon */
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </svg>
+          )}
+        </button>
+
+        {/* Command Palette Trigger Button */}
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+          className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono transition-all border shadow-sm ${
+            darkMode
+              ? 'border-neutral-700 bg-neutral-900/50 text-neutral-400 hover:text-emerald-400 hover:border-emerald-500/50 hover:bg-emerald-500/10'
+              : 'border-neutral-300 bg-neutral-50 text-neutral-500 hover:text-emerald-600 hover:border-emerald-400/50 hover:bg-emerald-50'
+          }`}
+        >
+          <span>Command Menu</span>
+          <kbd className={`px-1.5 py-0.5 rounded border text-[10px] shadow-sm font-sans ${
+            darkMode ? 'border-neutral-700 bg-black text-neutral-300' : 'border-neutral-300 bg-white text-neutral-600'
+          }`}>
+            {typeof window !== 'undefined' && navigator.userAgent.includes('Mac') ? '⌘K' : 'Ctrl+K'}
+          </kbd>
+        </button>
+      </div>
 
       {/* Navigation Bar */}
       <nav
