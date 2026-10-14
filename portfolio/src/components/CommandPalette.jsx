@@ -15,7 +15,13 @@ export default function CommandPalette({ onNavigate, darkMode, onToggleTheme }) 
     { id: 'help', title: '> ./help.sh', action: () => onNavigate('help') },
     { id: 'theme', title: '> toggle_dark_mode', action: () => onToggleTheme() },
     { id: 'resume', title: '> download_resume.pdf', action: () => {
-        window.open('https://www.linkedin.com/in/diya-deepu/', '_blank');
+        // Triggers a native file download using Vite's base URL
+        const link = document.createElement('a');
+        link.href = `${import.meta.env.BASE_URL}Diya_Deepu_Resume.pdf`;
+        link.download = 'Diya_Deepu_Resume.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }},
   ];
 
