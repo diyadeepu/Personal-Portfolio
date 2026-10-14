@@ -11,7 +11,8 @@ import HelpTerminal from './components/HelpTerminal';
 import LoadingScreen from './components/LoadingScreen';
 import IntroScreen from './components/IntroScreen';
 import Footer from './components/Footer';
-import ScrollHighlight from './components/ScrollHighlight'; // IMPORT ADDED HERE
+import ScrollHighlight from './components/ScrollHighlight';
+import CustomCursor from './components/CustomCursor';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -51,7 +52,7 @@ function App() {
     setTimeout(() => {
       setShowIntro(false);
       setIsSlidingUp(false);
-      setStartTerminalTyping(true); // START TYPING AFTER SLIDE-UP FINISHES
+      setStartTerminalTyping(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 800);
   };
@@ -61,7 +62,9 @@ function App() {
   }
 
   return (
-    <div className="relative min-h-screen w-full bg-[#050505] overflow-x-hidden">
+    <div className="relative min-h-screen w-full bg-[#050505] overflow-x-hidden cursor-none">
+      <CustomCursor darkMode={darkMode} />
+
       {/* Intro Overlay */}
       {showIntro && (
         <div
@@ -138,7 +141,7 @@ function App() {
                 </ScrollHighlight>
               </div>
 
-              {/* UNWRAPPED PROJECTS (You mentioned this already has its own highlight logic) */}
+              {/* UNWRAPPED PROJECTS */}
               <div id="projects" className="w-full">
                 <Projects darkMode={darkMode} />
               </div>
