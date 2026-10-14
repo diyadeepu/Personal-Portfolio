@@ -1,4 +1,5 @@
 import MagneticWrapper from './MagneticWrapper';
+import AsciiImage from './AsciiImage';
 
 export default function IntroScreen({ onProceed, darkMode }) {
   // Path for GitHub Pages deployment
@@ -45,7 +46,7 @@ export default function IntroScreen({ onProceed, darkMode }) {
           <div className="absolute inset-0 rounded-full bg-emerald-500/10 blur-3xl -z-10" />
 
           <div className="w-full h-full rounded-3xl border border-neutral-800 bg-[#050505] overflow-hidden shadow-2xl flex items-center justify-center p-4">
-            <img
+            <AsciiImage
               src={imgSrc}
               alt="Diya Deepu"
               className="w-full h-full object-cover rounded-2xl"
