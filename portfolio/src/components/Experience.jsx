@@ -4,22 +4,22 @@ import GlowCard from './GlowCard';
 export default function Experience({ darkMode }) {
   const experiences = [
     {
-      role: 'Product Management Intern',
-      company: 'Cardinal Services x OSU PM Club',
-      date: 'Apr 2026 – June 2026',
-      bullets: [
-        'Architected product requirements and planned streamlined HR onboarding workflows with 7 other interns.',
-        'Identified specific business needs and requirements from cross-functional leadership and qualitative research.',
-      ],
+    role: 'Undergraduate Research Assistant',
+    company: 'OSU MIME Department (URSA Engage)',
+    date: 'Feb 2026 – Present',
+    bullets: [
+      'Evaluated Maximal Covering Location-Interdiction Models (MCLIP) for Oregon freight and truck parking infrastructure.',
+      'Analyzed insights from complex data sets on 97 truck parking locations in Oregon using Python to report on infrastructure progress with faculty mentorship on a weekly basis.',
+    ],
     },
     {
-      role: 'Undergraduate Research Assistant',
-      company: 'OSU MIME Department (URSA Engage)',
-      date: 'Feb 2026 – Sep 2026',
-      bullets: [
-        'Evaluated Maximal Covering Location-Interdiction Models (MCLIP) for Oregon freight and truck parking infrastructure.',
-        'Analyzed insights from complex data sets on 97 truck parking locations in Oregon using Python to report on infrastructure progress with faculty mentorship on a weekly basis.',
-      ],
+    role: 'Product Management Intern',
+    company: 'Cardinal Services x OSU PM Club',
+    date: 'Apr 2026 – June 2026',
+    bullets: [
+      'Architected product requirements and planned streamlined HR onboarding workflows with 7 other interns.',
+      'Identified specific business needs and requirements from cross-functional leadership and qualitative research.',
+    ],
     },
     {
       role: 'Software Engineering Intern',
