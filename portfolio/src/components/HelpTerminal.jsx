@@ -1,311 +1,237 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-// Web Audio API Synthesizer for Mechanical Keyboard Clicks
-const playKeyClick = () => {
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-
-    // White noise burst for switch mechanical snap
-    const bufferSize = ctx.sampleRate * 0.012;
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-
-    const noise = ctx.createBufferSource();
-    noise.buffer = buffer;
-
-    // Bandpass filter to model mechanical switch body thock
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(1400 + Math.random() * 500, ctx.currentTime);
-    filter.Q.setValueAtTime(3.5, ctx.currentTime);
-
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.12, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.012);
-
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-
-    noise.start();
-    noise.stop(ctx.currentTime + 0.012);
-  } catch {
-    // Fallback if browser audio context requires interaction
-  }
-};
-
-const COMMAND_MAP = {
-  'show coursework': { targetPage: 'coursework', sectionId: null, label: 'coursework page' },
-  'show credentials': { targetPage: 'home', sectionId: 'credentials', label: 'credentials section' },
-  'show awards': { targetPage: 'home', sectionId: 'credentials', label: 'credentials section' },
-  'show honors': { targetPage: 'home', sectionId: 'credentials', label: 'credentials section' },
-  'show experience': { targetPage: 'home', sectionId: 'experience', label: 'experience section' },
-  'show projects': { targetPage: 'home', sectionId: 'projects', label: 'projects section' },
-  'show contact information': { targetPage: 'contact', sectionId: null, label: 'contact page' },
-  'show contact': { targetPage: 'contact', sectionId: null, label: 'contact page' },
-};
-
-const AVAILABLE_COMMANDS = Object.keys(COMMAND_MAP);
-
-export default function HelpTerminal({ onNavigate, onBack, darkMode }) {
-  const [input, setInput] = useState('');
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [showDropdown, setShowDropdown] = useState(false);
+export default function HelpTerminal({ darkMode, onNavigate, onBack }) {
   const [history, setHistory] = useState([
     {
       type: 'system',
-      text: 'Ask Diya about coursework, credentials, awards, honors, experience, projects, or contact information.',
-    },
+      content: (
+        <div className="space-y-2">
+          <p>Initialize Diya_OS (v2.0.26) ... [ OK ]</p>
+          <p>Loading NLP Command Module ... [ OK ]</p>
+          <p className={`font-bold mt-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+            Welcome to the AI Command Line Interface.
+          </p>
+          <p>Type <span className="text-blue-400">help</span> to see available commands, or use the quick actions below.</p>
+        </div>
+      )
+    }
   ]);
-  const [isTyping, setIsTyping] = useState(false);
+  const [input, setInput] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const endOfMessagesRef = useRef(null);
   const inputRef = useRef(null);
-  const bottomRef = useRef(null);
 
-  const filteredSuggestions = AVAILABLE_COMMANDS.filter((cmd) =>
-    cmd.toLowerCase().includes(input.trim().toLowerCase())
-  );
+  // Auto-scroll to the bottom when new messages appear
+  useEffect(() => {
+    endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [history, isProcessing]);
 
+  // Keep input focused
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [history]);
+  const handleCommand = (cmdText) => {
+    const command = cmdText.trim().toLowerCase();
+    if (!command) return;
 
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [input]);
-
-  const typeOutText = (text, type = 'system', onComplete = null) => {
-    setIsTyping(true);
-    let currentText = '';
-    let index = 0;
-
-    setHistory((prev) => [...prev, { type, text: '' }]);
-
-    const interval = setInterval(() => {
-      if (index < text.length) {
-        currentText += text[index];
-        index++;
-        playKeyClick();
-
-        setHistory((prev) => {
-          const newHist = [...prev];
-          newHist[newHist.length - 1] = { type, text: currentText };
-          return newHist;
-        });
-      } else {
-        clearInterval(interval);
-        setIsTyping(false);
-        if (onComplete) onComplete();
-      }
-    }, 28);
-  };
-
-  const executeCommand = (cmdToRun) => {
-    const cleanCmd = cmdToRun.trim().toLowerCase();
-    setShowDropdown(false);
+    // Add user command to history
+    setHistory(prev => [...prev, { type: 'user', content: `> ${command}` }]);
     setInput('');
+    setIsProcessing(true);
 
-    const userLine = `diya@portfolio ~ % ${cleanCmd}`;
-    setHistory((prev) => [...prev, { type: 'user', text: userLine }]);
+    // Simulate AI / Network processing delay
+    setTimeout(() => {
+      let responseContent;
 
-    if (cleanCmd === 'clear') {
-      setHistory([]);
-      return;
-    }
+      switch (command) {
+        case 'help':
+        case 'ls':
+          responseContent = (
+            <div className="space-y-2">
+              <p>Available commands:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li><span className="font-bold">whoami</span> - Display user profile</li>
+                <li><span className="font-bold">navigate</span> - List accessible directories (pages)</li>
+                <li><span className="font-bold">get resume</span> - Download resume.pdf</li>
+                <li><span className="font-bold">clear</span> - Clear terminal history</li>
+              </ul>
+            </div>
+          );
+          break;
 
-    const matched = COMMAND_MAP[cleanCmd];
+        case 'whoami':
+          responseContent = (
+            <div className="space-y-2">
+              <p className="font-bold">Diya Deepu</p>
+              <p>Undergraduate Honors student at Oregon State University pursuing a B.S. in Computer Science with a minor in Business.</p>
+              <p>Actively seeking undergraduate SWE and Product Management internships.</p>
+              <p>Status: <span className="text-green-500">Available</span></p>
+            </div>
+          );
+          break;
 
-    if (matched) {
-      const response = `Sounds good! :) Let me bring you over to the [${matched.label}].`;
-      typeOutText(response, 'success', () => {
-        setTimeout(() => {
-          onNavigate(matched.targetPage, matched.sectionId);
-        }, 800);
-      });
-    } else {
-      const errorMsg = `Request failed as command '${cleanCmd}' doesn't exist.`;
-      typeOutText(errorMsg, 'error');
-    }
+        case 'navigate':
+        case 'cd':
+        case 'dir':
+          responseContent = (
+            <div className="space-y-3">
+              <p>Select a directory to navigate to:</p>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => onNavigate('home', 'experience')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50">/experience</button>
+                <button onClick={() => onNavigate('home', 'projects')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50">/projects</button>
+                <button onClick={() => onNavigate('coursework')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50">/coursework</button>
+                <button onClick={() => onNavigate('contact')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50">/contact</button>
+              </div>
+            </div>
+          );
+          break;
+
+        case 'get resume':
+        case 'curl resume':
+        case 'download resume':
+          window.dispatchEvent(new CustomEvent('start-download'));
+          responseContent = (
+            <p className={darkMode ? 'text-emerald-400' : 'text-emerald-600'}>
+              [SUCCESS] Triggering download sequence for resume.pdf...
+            </p>
+          );
+          break;
+
+        case 'clear':
+          setHistory([]);
+          setIsProcessing(false);
+          return;
+
+        case 'sudo hire':
+        case 'sudo hire diya':
+          responseContent = (
+            <div className="space-y-1">
+              <p className="text-emerald-500 animate-pulse">[AUTHORIZATION GRANTED]</p>
+              <p>Generating offer letter...</p>
+              <button
+                onClick={() => onNavigate('contact')}
+                className="mt-2 border px-3 py-1 rounded bg-emerald-500 text-black font-bold hover:bg-emerald-400"
+              >
+                Proceed to Contact Page ↗
+              </button>
+            </div>
+          );
+          break;
+
+        default:
+          responseContent = (
+            <p className="text-red-400">
+              Command not found: '{command}'. Type <span className="text-blue-400 cursor-pointer hover:underline" onClick={() => handleCommand('help')}>help</span> to view available commands.
+            </p>
+          );
+      }
+
+      setHistory(prev => [...prev, { type: 'system', content: responseContent }]);
+      setIsProcessing(false);
+    }, 600); // 600ms AI delay
   };
 
-  const handleKeyDown = (e) => {
-    if (isTyping) return;
-
-    if (showDropdown && filteredSuggestions.length > 0) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % filteredSuggestions.length);
-        return;
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length);
-        return;
-      }
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const selected = filteredSuggestions[selectedIndex];
-        if (selected) setInput(selected);
-        return;
-      }
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const selected = filteredSuggestions[selectedIndex] || input;
-        executeCommand(selected);
-        return;
-      }
-    }
-
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      executeCommand(input);
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleCommand(input);
   };
 
   return (
-    <section className="w-full max-w-3xl font-mono">
-      <button
-        onClick={onBack}
-        className={`mb-6 inline-flex items-center gap-2 text-xs font-bold transition-colors cursor-pointer ${
-          darkMode ? 'text-neutral-400 hover:text-emerald-400' : 'text-neutral-700 hover:text-emerald-600'
-        }`}
-      >
-        <span>←</span> back to home
-      </button>
+    <section className="w-full max-w-3xl font-mono relative flex flex-col h-[70vh] sm:h-[80vh]">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4 shrink-0">
+        <button
+          onClick={onBack}
+          className={`inline-flex items-center gap-2 text-xs transition-colors cursor-none font-bold ${
+            darkMode ? 'text-neutral-400 hover:text-emerald-400' : 'text-neutral-700 hover:text-emerald-600'
+          }`}
+        >
+          <span>←</span> exit terminal
+        </button>
+        <span className={`text-xs uppercase tracking-widest font-bold ${darkMode ? 'text-neutral-600' : 'text-neutral-400'}`}>
+          AI_Shell_Session
+        </span>
+      </div>
 
+      {/* Terminal Window */}
       <div
-        className={`border rounded-xl shadow-2xl overflow-hidden transition-colors duration-500 relative ${
-          darkMode ? 'bg-black border-neutral-800' : 'bg-white border-neutral-300'
+        className={`flex-1 rounded-xl border overflow-hidden flex flex-col shadow-2xl transition-colors duration-500 ${
+          darkMode ? 'bg-[#0a0a0a] border-neutral-800' : 'bg-white border-neutral-300'
         }`}
         onClick={() => inputRef.current?.focus()}
       >
-        {/* Header Bar */}
-        <div
-          className={`flex items-center justify-between px-4 py-3 border-b ${
-            darkMode ? 'bg-neutral-900/80 border-neutral-800' : 'bg-neutral-100 border-neutral-200'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-red-500/80 inline-block" />
-            <span className="h-3 w-3 rounded-full bg-yellow-500/80 inline-block" />
-            <span className="h-3 w-3 rounded-full bg-green-500/80 inline-block" />
-            <span
-              className={`ml-2 text-xs font-bold ${
-                darkMode ? 'text-neutral-400' : 'text-neutral-600'
-              }`}
-            >
-              zsh - interactive help prompt
-            </span>
-          </div>
-          <span className="text-[10px] text-emerald-500 font-semibold">[zsh active]</span>
+        {/* Terminal Top Bar */}
+        <div className={`flex items-center gap-2 p-3 border-b shrink-0 ${darkMode ? 'border-neutral-800 bg-[#111]' : 'border-neutral-200 bg-slate-50'}`}>
+          <span className="h-3 w-3 rounded-full bg-red-500/80 inline-block" />
+          <span className="h-3 w-3 rounded-full bg-yellow-500/80 inline-block" />
+          <span className="h-3 w-3 rounded-full bg-green-500/80 inline-block" />
+          <span className={`ml-2 text-xs font-semibold ${darkMode ? 'text-neutral-500' : 'text-neutral-500'}`}>
+            diya@portfolio: ~/help
+          </span>
         </div>
 
-        {/* Terminal Body */}
-        <div className="p-6 min-h-[360px] max-h-[500px] overflow-y-auto space-y-3 text-sm relative">
-          {history.map((item, i) => (
+        {/* Output History Area */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-sm">
+          {history.map((entry, index) => (
             <div
-              key={i}
-              className={`leading-relaxed whitespace-pre-wrap ${
-                item.type === 'user'
-                  ? darkMode
-                    ? 'text-white font-bold'
-                    : 'text-neutral-900 font-bold'
-                  : item.type === 'error'
-                  ? 'text-rose-500 font-medium'
-                  : darkMode
-                  ? 'text-emerald-400'
-                  : 'text-emerald-600 font-medium'
+              key={index}
+              className={`animate-in fade-in slide-in-from-bottom-2 duration-200 ${
+                entry.type === 'user' ? (darkMode ? 'text-white' : 'text-black') : (darkMode ? 'text-neutral-300' : 'text-neutral-700')
               }`}
             >
-              {item.text}
+              {entry.content}
             </div>
           ))}
 
-          {/* Interactive Input Line */}
-          <div className="relative pt-2">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                executeCommand(input);
-              }}
-              className="flex items-center gap-2"
-            >
-              <span
-                className={`font-bold shrink-0 ${
-                  darkMode ? 'text-emerald-400' : 'text-emerald-600'
-                }`}
-              >
-                diya@portfolio ~ % Ask Diya to
-              </span>
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                disabled={isTyping}
-                onFocus={() => setShowDropdown(true)}
-                onChange={(e) => {
-                  setInput(e.target.value);
-                  setShowDropdown(true);
-                  playKeyClick();
-                }}
-                onKeyDown={handleKeyDown}
-                placeholder="[type command...]"
-                className={`w-full bg-transparent outline-none font-mono text-sm ${
-                  darkMode ? 'text-white placeholder-neutral-600' : 'text-neutral-900 placeholder-neutral-400'
-                }`}
-              />
-            </form>
+          {isProcessing && (
+            <div className="flex gap-2 items-center text-neutral-500 animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>Agent reasoning...</span>
+            </div>
+          )}
+          <div ref={endOfMessagesRef} />
+        </div>
 
-            {/* Dropdown Commands Menu */}
-            {showDropdown && filteredSuggestions.length > 0 && !isTyping && (
-              <div
-                className={`absolute left-0 right-0 top-full mt-2 z-50 border rounded-lg shadow-2xl p-2 overflow-hidden transition-all ${
-                  darkMode
-                    ? 'bg-neutral-950 border-emerald-500/40 text-neutral-200'
-                    : 'bg-white border-emerald-500/50 text-neutral-800 shadow-xl'
+        {/* Input Area */}
+        <div className={`p-4 border-t shrink-0 ${darkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
+          {/* Quick Command Chips */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {['help', 'whoami', 'navigate', 'get resume'].map((cmd) => (
+              <button
+                key={cmd}
+                onClick={() => handleCommand(cmd)}
+                disabled={isProcessing}
+                className={`text-xs px-2.5 py-1 rounded-md border cursor-none transition-colors ${
+                  darkMode 
+                    ? 'border-neutral-700 text-neutral-400 hover:border-emerald-500 hover:text-emerald-400 bg-neutral-900/50' 
+                    : 'border-neutral-300 text-neutral-600 hover:border-emerald-600 hover:text-emerald-600 bg-slate-50'
                 }`}
               >
-                <div
-                  className={`text-[10px] uppercase font-bold px-3 py-1 mb-1 border-b ${
-                    darkMode ? 'text-neutral-500 border-neutral-800' : 'text-neutral-400 border-neutral-200'
-                  }`}
-                >
-                  Commands List (Use ↑ ↓ or click to execute)
-                </div>
-                <div className="max-h-48 overflow-y-auto space-y-0.5">
-                  {filteredSuggestions.map((cmd, idx) => (
-                    <button
-                      key={cmd}
-                      type="button"
-                      onClick={() => executeCommand(cmd)}
-                      onMouseEnter={() => setSelectedIndex(idx)}
-                      className={`w-full text-left px-3 py-1.5 rounded text-xs font-mono flex items-center justify-between transition-colors cursor-pointer ${
-                        idx === selectedIndex
-                          ? darkMode
-                            ? 'bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30'
-                            : 'bg-emerald-50 text-emerald-700 font-bold border border-emerald-300'
-                          : darkMode
-                          ? 'hover:bg-neutral-900 text-neutral-300'
-                          : 'hover:bg-slate-100 text-neutral-700'
-                      }`}
-                    >
-                      <span>$ {cmd}</span>
-                      <span className="text-[10px] opacity-60">→ {COMMAND_MAP[cmd].label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+                $ {cmd}
+              </button>
+            ))}
           </div>
-          <div ref={bottomRef} />
+
+          <form onSubmit={handleSubmit} className="flex items-center gap-2">
+            <span className={`font-bold ${darkMode ? 'text-emerald-500' : 'text-emerald-600'}`}>
+              root@diyadeepu:~$
+            </span>
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              disabled={isProcessing}
+              className={`flex-1 bg-transparent outline-none border-none cursor-none ${
+                darkMode ? 'text-white' : 'text-black'
+              }`}
+              spellCheck="false"
+              autoComplete="off"
+            />
+            {/* Blinking block cursor effect on the input */}
+            <span className={`w-2.5 h-4 inline-block animate-pulse ${darkMode ? 'bg-emerald-500' : 'bg-emerald-600'}`} />
+          </form>
         </div>
       </div>
     </section>
