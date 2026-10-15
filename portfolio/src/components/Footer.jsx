@@ -8,7 +8,6 @@ export default function Footer({ darkMode }) {
       }`}
     >
       <div className="flex items-center gap-2">
-        {/* Blinking green circle matching text size */}
         <span className="h-[1em] w-[1em] rounded-full bg-emerald-500 animate-pulse shrink-0 inline-block" />
         <span
           className={`font-medium ${
@@ -20,39 +19,40 @@ export default function Footer({ darkMode }) {
       </div>
 
       <div className="flex items-center gap-6">
-        {/* NEW WAY - Added matching link classes */}
         <button
           onClick={(e) => {
             e.preventDefault();
             window.dispatchEvent(new CustomEvent('external-link', { detail: { url: 'https://github.com/diyadeepu' } }));
           }}
-          className={`font-bold transition-colors underline underline-offset-4 cursor-pointer ${
+          className={`font-bold transition-colors underline underline-offset-4 cursor-none ${
             darkMode
-              ? 'text-white hover:text-emerald-400 decoration-neutral-400 hover:decoration-emerald-400'
-              : 'text-neutral-900 hover:text-emerald-600 decoration-neutral-400 hover:decoration-emerald-600'
+              ? 'text-neutral-200 decoration-neutral-400/50 hover:text-white hover:decoration-white'
+              : 'text-neutral-700 decoration-neutral-500/50 hover:text-black hover:decoration-black'
           }`}
         >
           github
         </button>
+
         <button
           onClick={(e) => {
             e.preventDefault();
             window.dispatchEvent(new CustomEvent('external-link', { detail: { url: 'https://www.linkedin.com/in/diyadeepu' } }));
           }}
-          className={`font-bold transition-colors underline underline-offset-4 cursor-pointer ${
+          className={`font-bold transition-colors underline underline-offset-4 cursor-none ${
             darkMode
-              ? 'text-white hover:text-emerald-400 decoration-neutral-400 hover:decoration-emerald-400'
-              : 'text-neutral-900 hover:text-emerald-600 decoration-neutral-400 hover:decoration-emerald-600'
+              ? 'text-neutral-200 decoration-neutral-400/50 hover:text-white hover:decoration-white'
+              : 'text-neutral-700 decoration-neutral-500/50 hover:text-black hover:decoration-black'
           }`}
         >
           linkedin
         </button>
+
         <a
           href="mailto:maildiyadeepu@gmail.com"
-          className={`font-bold transition-colors underline underline-offset-4 ${
+          className={`font-bold transition-colors underline underline-offset-4 cursor-none ${
             darkMode
-              ? 'text-white hover:text-emerald-400 decoration-neutral-400 hover:decoration-emerald-400'
-              : 'text-neutral-900 hover:text-emerald-600 decoration-neutral-400 hover:decoration-emerald-600'
+              ? 'text-neutral-200 decoration-neutral-400/50 hover:text-white hover:decoration-white'
+              : 'text-neutral-700 decoration-neutral-500/50 hover:text-black hover:decoration-black'
           }`}
         >
           email

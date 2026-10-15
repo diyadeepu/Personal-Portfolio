@@ -3,7 +3,7 @@ export default function Contact({ onBack, darkMode }) {
     <section className="w-full max-w-2xl font-mono">
       <button
         onClick={onBack}
-        className={`mb-6 inline-flex items-center gap-2 text-xs transition-colors cursor-pointer font-bold ${
+        className={`mb-6 inline-flex items-center gap-2 text-xs transition-colors cursor-none font-bold ${
           darkMode ? 'text-neutral-400 hover:text-emerald-400' : 'text-neutral-700 hover:text-emerald-600'
         }`}
       >
@@ -36,7 +36,7 @@ export default function Contact({ onBack, darkMode }) {
             Get in Touch
           </h1>
           <p className={`text-sm mt-1 ${darkMode ? 'text-neutral-400' : 'text-neutral-600 font-medium'}`}>
-            Open for full-stack software engineering, product management, , AI, and IT opportunities.
+            Open for full-stack software engineering, product management, AI, and IT opportunities.
           </p>
         </div>
 
@@ -51,7 +51,11 @@ export default function Contact({ onBack, darkMode }) {
             </span>
             <a
               href="mailto:maildiyadeepu@gmail.com"
-              className={`font-bold hover:underline text-sm ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
+              className={`font-bold transition-colors underline underline-offset-4 cursor-none text-sm ${
+                darkMode 
+                  ? 'text-emerald-400 decoration-emerald-400/50 hover:text-white hover:decoration-white' 
+                  : 'text-emerald-600 decoration-emerald-600/50 hover:text-black hover:decoration-black'
+              }`}
             >
               maildiyadeepu@gmail.com
             </a>
@@ -65,13 +69,16 @@ export default function Contact({ onBack, darkMode }) {
             <span className={`text-xs uppercase tracking-wider block mb-1 ${darkMode ? 'text-neutral-500' : 'text-neutral-600 font-bold'}`}>
               # LinkedIn
             </span>
-            {/* NEW WAY - Added matching link classes */}
             <button
               onClick={(e) => {
                 e.preventDefault();
                 window.dispatchEvent(new CustomEvent('external-link', { detail: { url: 'https://www.linkedin.com/in/diyadeepu/' } }));
               }}
-              className={`font-bold hover:underline text-sm cursor-pointer ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
+              className={`font-bold transition-colors underline underline-offset-4 cursor-none text-sm ${
+                darkMode 
+                  ? 'text-emerald-400 decoration-emerald-400/50 hover:text-white hover:decoration-white' 
+                  : 'text-emerald-600 decoration-emerald-600/50 hover:text-black hover:decoration-black'
+              }`}
             >
               linkedin.com/in/diyadeepu/
             </button>
@@ -90,7 +97,11 @@ export default function Contact({ onBack, darkMode }) {
                 e.preventDefault();
                 window.dispatchEvent(new CustomEvent('external-link', { detail: { url: 'https://github.com/diyadeepu' } }));
               }}
-              className={`font-bold hover:underline text-sm cursor-pointer ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
+              className={`font-bold transition-colors underline underline-offset-4 cursor-none text-sm ${
+                darkMode 
+                  ? 'text-emerald-400 decoration-emerald-400/50 hover:text-white hover:decoration-white' 
+                  : 'text-emerald-600 decoration-emerald-600/50 hover:text-black hover:decoration-black'
+              }`}
             >
               github.com/diyadeepu
             </button>
