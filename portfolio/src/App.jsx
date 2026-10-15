@@ -18,6 +18,7 @@ import CommandPalette from './components/CommandPalette';
 import CopyFeedback from './components/CopyFeedback';
 import ExternalLinkModal from './components/ExternalLinkModal';
 import ScrollProgress from './components/ScrollProgress';
+import NeuralBackground from './components/NeuralBackground'; // Added Import
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -162,6 +163,10 @@ function App() {
       `}</style>
 
       <CustomCursor darkMode={darkMode} />
+
+      {/* ADDED NEURAL BACKGROUND */}
+      <NeuralBackground darkMode={darkMode} />
+
       <ScrollProgress darkMode={darkMode} />
       <CopyFeedback darkMode={darkMode} />
       <ExternalLinkModal darkMode={darkMode} />
@@ -182,9 +187,10 @@ function App() {
         </div>
       )}
 
+      {/* MODIFIED: Added `relative z-10` and changed backgrounds to `bg-transparent` */}
       <div
-        className={`min-h-screen w-full font-mono transition-colors duration-500 ${
-          darkMode ? 'bg-[#050505] text-neutral-100' : 'bg-slate-100 text-neutral-900'
+        className={`min-h-screen w-full font-mono transition-colors duration-500 relative z-10 ${
+          darkMode ? 'bg-transparent text-neutral-100' : 'bg-transparent text-neutral-900'
         }`}
       >
         <main className="p-6 md:p-12 flex flex-col items-center gap-12 max-w-5xl mx-auto w-full">
