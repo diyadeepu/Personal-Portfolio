@@ -10,7 +10,6 @@ const projects = [
     tech: ['React', 'Node.js', 'FEC API', 'Tailwind CSS'],
     github: 'https://github.com/virtuosovodka/beaverhacks',
     video: '/Personal-Portfolio/videos/electable-demo.mp4',
-    // ADDED PRD DATA HERE
     prd: {
       problem: 'Voters lack an accessible, unbiased way to align their personal values with congressional candidate records.',
       user: 'Young voters (18-29) and first-time participants seeking data-driven civic alignment.',
@@ -25,7 +24,6 @@ const projects = [
     tech: ['React', 'UX Design', 'Product Strategy', 'Tailwind CSS'],
     github: null,
     video: '/Personal-Portfolio/videos/route4u.mp4',
-    // ADDED PRD DATA HERE
     prd: {
       problem: 'Standard navigation apps optimize for speed, ignoring pedestrian concerns like street lighting and populated areas.',
       user: 'College students, late-night urban commuters, and vulnerable pedestrians.',
@@ -45,16 +43,7 @@ const projects = [
 
 export default function Projects({ darkMode }) {
   const [activeProject, setActiveProject] = useState(null);
-  // NEW STATE: Tracks which projects are currently flipped into PRD mode
-  const [prdView, setPrdView] = useState({});
-
-  const togglePrd = (title, e) => {
-    e.stopPropagation(); // Prevents triggering other hover/click events
-    setPrdView(prev => ({
-      ...prev,
-      [title]: !prev[title]
-    }));
-  };
+  const [activePrdProject, setActivePrdProject] = useState(null); // NEW STATE for PRD Modal
 
   return (
     <section className="w-full max-w-5xl font-mono relative">
@@ -69,151 +58,188 @@ export default function Projects({ darkMode }) {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {projects.map((project, index) => {
-          const isPrdMode = prdView[project.title];
-
-          return (
-            <GlowCard
-              key={project.title}
-              darkMode={darkMode}
-              onMouseEnter={() => project.video && setActiveProject(project)}
-              onMouseLeave={() => setActiveProject(null)}
-              className={`border rounded-xl p-6 transition-all flex flex-col justify-between ${
-                darkMode
-                  ? 'bg-black border-neutral-800 hover:border-emerald-500/50 shadow-lg'
-                  : 'bg-white border-neutral-300 hover:border-emerald-500/50 shadow-md'
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <div
-                    className={`flex items-center gap-2 font-bold text-base ${
-                      darkMode ? 'text-emerald-400' : 'text-emerald-600'
-                    }`}
-                  >
-                    <span>{index === projects.length - 1 ? '└──' : '├──'}</span>
-                    <span>{project.title}</span>
-                  </div>
-
-                  {/* Action Buttons Container */}
-                  <div className="flex items-center gap-2 z-20">
-                    {/* The PRD Toggle Button */}
-                    {project.prd && (
-                      <button
-                        onClick={(e) => togglePrd(project.title, e)}
-                        className={`text-[10px] border px-2 py-0.5 rounded font-bold cursor-pointer transition-colors ${
-                          isPrdMode 
-                            ? (darkMode ? 'bg-emerald-500 text-black border-emerald-500' : 'bg-emerald-600 text-white border-emerald-600')
-                            : (darkMode ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20' : 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100')
-                        }`}
-                      >
-                        {isPrdMode ? '[view desc]' : '[view PRD]'}
-                      </button>
-                    )}
-
-                    {project.video && (
-                      <span
-                        className={`text-[10px] border px-2 py-0.5 rounded font-semibold ${
-                          darkMode
-                            ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10'
-                            : 'text-emerald-700 border-emerald-300 bg-emerald-50'
-                        }`}
-                      >
-                        [hover preview]
-                      </span>
-                    )}
-                  </div>
+        {projects.map((project, index) => (
+          <GlowCard
+            key={project.title}
+            darkMode={darkMode}
+            onMouseEnter={() => project.video && setActiveProject(project)}
+            onMouseLeave={() => setActiveProject(null)}
+            className={`border rounded-xl p-6 transition-all flex flex-col justify-between ${
+              darkMode
+                ? 'bg-black border-neutral-800 hover:border-emerald-500/50 shadow-lg'
+                : 'bg-white border-neutral-300 hover:border-emerald-500/50 shadow-md'
+            }`}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div
+                  className={`flex items-center gap-2 font-bold text-base ${
+                    darkMode ? 'text-emerald-400' : 'text-emerald-600'
+                  }`}
+                >
+                  <span>{index === projects.length - 1 ? '└──' : '├──'}</span>
+                  <span>{project.title}</span>
                 </div>
 
-                {/* Conditional Rendering: Standard Copy vs PRD Format */}
-                <div className="min-h-[80px]">
-                  {isPrdMode && project.prd ? (
-                    <div className="animate-in fade-in zoom-in-95 duration-300 space-y-2 ml-6 mb-4">
-                      <div className="text-[10px] leading-relaxed">
-                        <span className={darkMode ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold'}>PROBLEM: </span>
-                        <span className={darkMode ? 'text-neutral-300' : 'text-neutral-700'}>{project.prd.problem}</span>
-                      </div>
-                      <div className="text-[10px] leading-relaxed">
-                        <span className={darkMode ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold'}>TARGET_USER: </span>
-                        <span className={darkMode ? 'text-neutral-300' : 'text-neutral-700'}>{project.prd.user}</span>
-                      </div>
-                      <div className="text-[10px] leading-relaxed">
-                        <span className={darkMode ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold'}>SUCCESS_METRICS: </span>
-                        <span className={darkMode ? 'text-neutral-300' : 'text-neutral-700'}>{project.prd.metrics}</span>
-                      </div>
-                      <div className="text-[10px] leading-relaxed">
-                        <span className={darkMode ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold'}>OUT_OF_SCOPE: </span>
-                        <span className={darkMode ? 'text-neutral-300' : 'text-neutral-700'}>{project.prd.outOfScope}</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="animate-in fade-in zoom-in-95 duration-300">
-                      <p
-                        className={`text-xs mb-3 ml-6 ${
-                          darkMode ? 'text-neutral-500' : 'text-neutral-600 font-semibold'
-                        }`}
-                      >
-                        # {project.dates}
-                      </p>
-                      <p
-                        className={`text-xs leading-relaxed ml-6 mb-4 ${
-                          darkMode ? 'text-neutral-300' : 'text-neutral-800 font-medium'
-                        }`}
-                      >
-                        {project.desc}
-                      </p>
-                    </div>
+                {/* Action Buttons Container */}
+                <div className="flex items-center gap-2 z-20">
+                  {/* PRD Popup Button */}
+                  {project.prd && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActivePrdProject(project);
+                      }}
+                      className={`text-[10px] border px-2 py-0.5 rounded font-bold cursor-pointer transition-colors ${
+                        darkMode 
+                          ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20' 
+                          : 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100'
+                      }`}
+                    >
+                      [view PRD]
+                    </button>
+                  )}
+
+                  {project.video && (
+                    <span
+                      className={`text-[10px] border px-2 py-0.5 rounded font-semibold ${
+                        darkMode
+                          ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10'
+                          : 'text-emerald-700 border-emerald-300 bg-emerald-50'
+                      }`}
+                    >
+                      [hover preview]
+                    </span>
                   )}
                 </div>
               </div>
 
-              <div
-                className={`ml-6 flex items-center justify-between pt-3 border-t ${
-                  darkMode ? 'border-neutral-900' : 'border-neutral-200'
-                }`}
-              >
-                <div className="flex flex-wrap gap-2">
-                  {project.tech.map((tag) => (
-                    <span
-                      key={tag}
-                      className={`text-[10px] border px-2 py-1 rounded font-medium ${
-                        darkMode
-                          ? 'bg-neutral-900 border-neutral-800 text-emerald-400'
-                          : 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                      }`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                {project.github ? (
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`text-xs transition-colors font-bold ${
-                      darkMode ? 'text-neutral-400 hover:text-white' : 'text-neutral-700 hover:text-neutral-900'
-                    }`}
-                  >
-                    GitHub ↗
-                  </a>
-                ) : (
-                  <span
-                    className={`text-xs ${
-                      darkMode ? 'text-neutral-600' : 'text-neutral-600 font-medium'
-                    }`}
-                  >
-                    [private repo]
-                  </span>
-                )}
+              {/* Standard Project Details */}
+              <div className="min-h-[80px]">
+                <p
+                  className={`text-xs mb-3 ml-6 ${
+                    darkMode ? 'text-neutral-500' : 'text-neutral-600 font-semibold'
+                  }`}
+                >
+                  # {project.dates}
+                </p>
+                <p
+                  className={`text-xs leading-relaxed ml-6 mb-4 ${
+                    darkMode ? 'text-neutral-300' : 'text-neutral-800 font-medium'
+                  }`}
+                >
+                  {project.desc}
+                </p>
               </div>
-            </GlowCard>
-          );
-        })}
+            </div>
+
+            <div
+              className={`ml-6 flex items-center justify-between pt-3 border-t ${
+                darkMode ? 'border-neutral-900' : 'border-neutral-200'
+              }`}
+            >
+              <div className="flex flex-wrap gap-2">
+                {project.tech.map((tag) => (
+                  <span
+                    key={tag}
+                    className={`text-[10px] border px-2 py-1 rounded font-medium ${
+                      darkMode
+                        ? 'bg-neutral-900 border-neutral-800 text-emerald-400'
+                        : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                    }`}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {project.github ? (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`text-xs transition-colors font-bold ${
+                    darkMode ? 'text-neutral-400 hover:text-white' : 'text-neutral-700 hover:text-neutral-900'
+                  }`}
+                >
+                  GitHub ↗
+                </a>
+              ) : (
+                <span
+                  className={`text-xs ${
+                    darkMode ? 'text-neutral-600' : 'text-neutral-600 font-medium'
+                  }`}
+                >
+                  [private repo]
+                </span>
+              )}
+            </div>
+          </GlowCard>
+        ))}
       </div>
 
-      {/* Expanded High-Resolution Preview Modal */}
+      {/* --- PRD POPUP MODAL --- */}
+      {activePrdProject && (
+        <div
+          className="fixed inset-0 z-[100000] flex items-center justify-center p-4 backdrop-blur-sm bg-black/60 transition-opacity"
+          onClick={() => setActivePrdProject(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`relative w-full max-w-2xl rounded-xl border p-6 shadow-2xl overflow-hidden flex flex-col font-mono animate-in fade-in zoom-in-95 duration-200 ${
+              darkMode ? 'bg-[#0a0a0a] border-emerald-500/50' : 'bg-white border-emerald-600/50'
+            }`}
+          >
+            {/* Modal Header */}
+            <div className={`flex items-center justify-between pb-4 mb-4 border-b ${darkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
+              <span className={`text-xs font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                $ cat prd_{activePrdProject.title.toLowerCase().replace(/\s+/g, '_')}.md
+              </span>
+              <button
+                onClick={() => setActivePrdProject(null)}
+                className={`text-[10px] border px-2 py-1 rounded font-bold transition-colors cursor-pointer ${
+                  darkMode ? 'text-neutral-400 border-neutral-700 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 border-neutral-300 hover:text-black hover:bg-neutral-100'
+                }`}
+              >
+                [x] close
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="space-y-4">
+              <div>
+                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## PROBLEM_STATEMENT</h4>
+                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
+                  {activePrdProject.prd.problem}
+                </p>
+              </div>
+
+              <div>
+                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## TARGET_USER</h4>
+                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
+                  {activePrdProject.prd.user}
+                </p>
+              </div>
+
+              <div>
+                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## SUCCESS_METRICS</h4>
+                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
+                  {activePrdProject.prd.metrics}
+                </p>
+              </div>
+
+              <div>
+                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## OUT_OF_SCOPE</h4>
+                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
+                  {activePrdProject.prd.outOfScope}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Expanded High-Resolution Preview Modal (Unchanged) */}
       {activeProject?.video && (
         <div
           className={`fixed bottom-6 right-6 z-50 w-[calc(100vw-3rem)] sm:w-[32rem] md:w-[36rem] max-w-[95vw] border rounded-xl p-4 shadow-2xl backdrop-blur-md transition-all pointer-events-none ${
