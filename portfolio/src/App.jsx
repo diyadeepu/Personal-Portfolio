@@ -18,7 +18,7 @@ import CommandPalette from './components/CommandPalette';
 import CopyFeedback from './components/CopyFeedback';
 import ExternalLinkModal from './components/ExternalLinkModal';
 import ScrollProgress from './components/ScrollProgress';
-import NeuralBackground from './components/NeuralBackground'; // Added Import
+import NeuralBackground from './components/NeuralBackground';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -147,7 +147,7 @@ function App() {
   }
 
   return (
-    <div className="relative min-h-screen w-full bg-[#050505] overflow-x-hidden cursor-none selection:bg-emerald-500 selection:text-black">
+    <div className={`relative min-h-screen w-full overflow-x-hidden cursor-none selection:bg-emerald-500 selection:text-black transition-colors duration-500 ${darkMode ? 'bg-[#050505]' : 'bg-slate-100'}`}>
       {/* Dynamic Keyframes for the scanner line and wipe effect */}
       <style>{`
         @keyframes scanDown {
