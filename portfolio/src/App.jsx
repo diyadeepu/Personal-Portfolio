@@ -16,7 +16,8 @@ import CustomCursor from './components/CustomCursor';
 import MagneticWrapper from './components/MagneticWrapper';
 import CommandPalette from './components/CommandPalette';
 import CopyFeedback from './components/CopyFeedback';
-import ExternalLinkModal from './components/ExternalLinkModal'; // Kept the External Link Modal
+import ExternalLinkModal from './components/ExternalLinkModal';
+import ScrollProgress from './components/ScrollProgress'; // NEW IMPORT
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -68,6 +69,9 @@ function App() {
   return (
     <div className="relative min-h-screen w-full bg-[#050505] overflow-x-hidden cursor-none selection:bg-emerald-500 selection:text-black">
       <CustomCursor darkMode={darkMode} />
+
+      {/* MOUNTED SCROLL PROGRESS BAR */}
+      <ScrollProgress darkMode={darkMode} />
 
       <CopyFeedback darkMode={darkMode} />
 
