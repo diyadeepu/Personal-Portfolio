@@ -65,14 +65,15 @@ export default function Contact({ onBack, darkMode }) {
             <span className={`text-xs uppercase tracking-wider block mb-1 ${darkMode ? 'text-neutral-500' : 'text-neutral-600 font-bold'}`}>
               # LinkedIn
             </span>
-            <a
-              href="https://www.linkedin.com/in/diyadeepu/"
-              target="_blank"
-              rel="noreferrer"
-              className={`font-bold hover:underline text-sm ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
+            {/* NEW WAY */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                window.dispatchEvent(new CustomEvent('external-link', { detail: { url: 'https://www.linkedin.com/in/diyadeepu/' } }));
+              }}
             >
               linkedin.com/in/diyadeepu/
-            </a>
+            </button>
           </div>
 
           <div
@@ -83,14 +84,14 @@ export default function Contact({ onBack, darkMode }) {
             <span className={`text-xs uppercase tracking-wider block mb-1 ${darkMode ? 'text-neutral-500' : 'text-neutral-600 font-bold'}`}>
               # GitHub
             </span>
-            <a
-              href="https://github.com/diyadeepu"
-              target="_blank"
-              rel="noreferrer"
-              className={`font-bold hover:underline text-sm ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                window.dispatchEvent(new CustomEvent('external-link', { detail: { url: 'https://github.com/diyadeepu' } }));
+              }}
             >
               github.com/diyadeepu
-            </a>
+            </button>
           </div>
 
           <div

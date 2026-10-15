@@ -20,30 +20,23 @@ export default function Footer({ darkMode }) {
       </div>
 
       <div className="flex items-center gap-6">
-        <a
-          href="https://github.com/diyadeepu"
-          target="_blank"
-          rel="noreferrer"
-          className={`font-bold transition-colors underline underline-offset-4 ${
-            darkMode
-              ? 'text-white hover:text-emerald-400 decoration-neutral-700 hover:decoration-emerald-400'
-              : 'text-neutral-900 hover:text-emerald-600 decoration-neutral-300 hover:decoration-emerald-600'
-          }`}
+        {/* NEW WAY */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            window.dispatchEvent(new CustomEvent('external-link', { detail: { url: 'https://github.com/diyadeepu' } }));
+          }}
         >
           github
-        </a>
-        <a
-          href="https://linkedin.com/in/diyadeepu"
-          target="_blank"
-          rel="noreferrer"
-          className={`font-bold transition-colors underline underline-offset-4 ${
-            darkMode
-              ? 'text-white hover:text-emerald-400 decoration-neutral-700 hover:decoration-emerald-400'
-              : 'text-neutral-900 hover:text-emerald-600 decoration-neutral-300 hover:decoration-emerald-600'
-          }`}
+        </button>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            window.dispatchEvent(new CustomEvent('external-link', { detail: { url: 'https://www.linkedin.com/in/diyadeepu' } }));
+          }}
         >
           linkedin
-        </a>
+        </button>
         <a
           href="mailto:maildiyadeepu@gmail.com"
           className={`font-bold transition-colors underline underline-offset-4 ${
