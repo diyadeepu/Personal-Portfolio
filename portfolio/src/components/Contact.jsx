@@ -36,7 +36,7 @@ export default function Contact({ onBack, darkMode }) {
             Get in Touch
           </h1>
           <p className={`text-sm mt-1 ${darkMode ? 'text-neutral-400' : 'text-neutral-600 font-medium'}`}>
-            Open for full-stack software engineering, AI, IT, and product management opportunities.
+            Open for full-stack software engineering, product management, , AI, and IT opportunities.
           </p>
         </div>
 
