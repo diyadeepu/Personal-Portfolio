@@ -40,6 +40,11 @@ export default function HelpTerminal({ darkMode, onNavigate, onBack }) {
     setInput('');
     setIsProcessing(true);
 
+    // FIX: Trigger the download event immediately to bypass browser popup blockers
+    if (['get resume', 'curl resume', 'download resume'].includes(command)) {
+      window.dispatchEvent(new CustomEvent('start-download'));
+    }
+
     // Simulate AI / Network processing delay
     setTimeout(() => {
       let responseContent;
@@ -51,10 +56,10 @@ export default function HelpTerminal({ darkMode, onNavigate, onBack }) {
             <div className="space-y-2">
               <p>Available commands:</p>
               <ul className="list-disc list-inside space-y-1 ml-2">
-                <li><span className="font-bold">whoami</span> - Display user profile</li>
-                <li><span className="font-bold">navigate</span> - List accessible directories (pages)</li>
-                <li><span className="font-bold">get resume</span> - Download resume.pdf</li>
-                <li><span className="font-bold">clear</span> - Clear terminal history</li>
+                <li><span className="font-bold">whoami</span> Display user profile</li>
+                <li><span className="font-bold">navigate</span> List accessible directories (pages)</li>
+                <li><span className="font-bold">get resume</span> Download resume.pdf</li>
+                <li><span className="font-bold">clear</span> Clear terminal history</li>
               </ul>
             </div>
           );
@@ -78,10 +83,10 @@ export default function HelpTerminal({ darkMode, onNavigate, onBack }) {
             <div className="space-y-3">
               <p>Select a directory to navigate to:</p>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => onNavigate('home', 'experience')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50">/experience</button>
-                <button onClick={() => onNavigate('home', 'projects')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50">/projects</button>
-                <button onClick={() => onNavigate('coursework')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50">/coursework</button>
-                <button onClick={() => onNavigate('contact')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50">/contact</button>
+                <button onClick={() => onNavigate('home', 'experience')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50 cursor-none">/experience</button>
+                <button onClick={() => onNavigate('home', 'projects')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50 cursor-none">/projects</button>
+                <button onClick={() => onNavigate('coursework')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50 cursor-none">/coursework</button>
+                <button onClick={() => onNavigate('contact')} className="border px-2 py-1 rounded hover:bg-emerald-500/20 border-emerald-500/50 cursor-none">/contact</button>
               </div>
             </div>
           );
@@ -90,7 +95,6 @@ export default function HelpTerminal({ darkMode, onNavigate, onBack }) {
         case 'get resume':
         case 'curl resume':
         case 'download resume':
-          window.dispatchEvent(new CustomEvent('start-download'));
           responseContent = (
             <p className={darkMode ? 'text-emerald-400' : 'text-emerald-600'}>
               [SUCCESS] Triggering download sequence for resume.pdf...
@@ -111,7 +115,7 @@ export default function HelpTerminal({ darkMode, onNavigate, onBack }) {
               <p>Generating offer letter...</p>
               <button
                 onClick={() => onNavigate('contact')}
-                className="mt-2 border px-3 py-1 rounded bg-emerald-500 text-black font-bold hover:bg-emerald-400"
+                className="mt-2 border px-3 py-1 rounded bg-emerald-500 text-black font-bold hover:bg-emerald-400 cursor-none"
               >
                 Proceed to Contact Page ↗
               </button>
@@ -122,7 +126,7 @@ export default function HelpTerminal({ darkMode, onNavigate, onBack }) {
         default:
           responseContent = (
             <p className="text-red-400">
-              Command not found: '{command}'. Type <span className="text-blue-400 cursor-pointer hover:underline" onClick={() => handleCommand('help')}>help</span> to view available commands.
+              Command not found: '{command}'. Type <span className="text-blue-400 cursor-none hover:underline" onClick={() => handleCommand('help')}>help</span> to view available commands.
             </p>
           );
       }
