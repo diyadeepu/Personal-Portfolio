@@ -64,8 +64,7 @@ function App() {
     return <LoadingScreen darkMode={darkMode} />;
   }
 
-  return (
-    {/* ADDED SELECTION CSS CLASSES TO THIS ROOT DIV */}
+return (
     <div className="relative min-h-screen w-full bg-[#050505] overflow-x-hidden cursor-none selection:bg-emerald-500 selection:text-black">
       <CustomCursor darkMode={darkMode} />
 
