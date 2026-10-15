@@ -65,12 +65,13 @@ export default function Contact({ onBack, darkMode }) {
             <span className={`text-xs uppercase tracking-wider block mb-1 ${darkMode ? 'text-neutral-500' : 'text-neutral-600 font-bold'}`}>
               # LinkedIn
             </span>
-            {/* NEW WAY */}
+            {/* NEW WAY - Added matching link classes */}
             <button
               onClick={(e) => {
                 e.preventDefault();
                 window.dispatchEvent(new CustomEvent('external-link', { detail: { url: 'https://www.linkedin.com/in/diyadeepu/' } }));
               }}
+              className={`font-bold hover:underline text-sm cursor-pointer ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
             >
               linkedin.com/in/diyadeepu/
             </button>
@@ -89,6 +90,7 @@ export default function Contact({ onBack, darkMode }) {
                 e.preventDefault();
                 window.dispatchEvent(new CustomEvent('external-link', { detail: { url: 'https://github.com/diyadeepu' } }));
               }}
+              className={`font-bold hover:underline text-sm cursor-pointer ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
             >
               github.com/diyadeepu
             </button>

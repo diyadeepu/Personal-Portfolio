@@ -24,7 +24,7 @@ export default function ExternalLinkModal({ darkMode }) {
 
   return (
     <div
-      className="fixed inset-0 z-[100000] flex items-center justify-center p-4 backdrop-blur-sm bg-black/60 transition-opacity"
+      className="fixed inset-0 z-[100000] flex items-center justify-center p-4 backdrop-blur-sm bg-black/60 transition-opacity cursor-auto"
       onClick={() => setIsOpen(false)} // Close if they click the background
     >
       <div
