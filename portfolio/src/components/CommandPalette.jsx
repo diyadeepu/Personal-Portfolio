@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+import { useAudioState } from '../utils/audioManager';
 
 export default function CommandPalette({ onNavigate, darkMode, onToggleTheme }) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
+  const { isAudioEnabled, toggleGlobalAudio } = useAudioState();
 
   const commands = [
     { id: 'home', title: '> cd /home', action: () => onNavigate('home') },
@@ -98,7 +100,15 @@ export default function CommandPalette({ onNavigate, darkMode, onToggleTheme }) 
             placeholder="Type a command or search..."
             className="w-full bg-transparent outline-none text-sm sm:text-base placeholder-neutral-600"
           />
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <button
+              onClick={toggleGlobalAudio}
+              className={`text-xs font-mono font-bold cursor-none border px-2 py-1 rounded transition-colors ${
+                darkMode ? 'text-neutral-400 border-neutral-700 hover:text-emerald-400' : 'text-neutral-600 border-neutral-300 hover:text-emerald-600'
+              }`}
+            >
+              [ audio: {isAudioEnabled ? 'on' : 'off'} ]
+            </button>
             <span className={`text-xs px-2 py-1 rounded border ${darkMode ? 'border-neutral-700 text-neutral-400 bg-neutral-900' : 'border-neutral-300 text-neutral-500 bg-neutral-100'}`}>ESC</span>
           </div>
         </div>
@@ -117,7 +127,7 @@ export default function CommandPalette({ onNavigate, darkMode, onToggleTheme }) 
                   setIsOpen(false);
                 }}
                 onMouseEnter={() => setSelectedIndex(index)}
-                className={`w-full text-left px-5 py-3 text-sm flex justify-between items-center transition-colors cursor-pointer ${
+                className={`w-full text-left px-5 py-3 text-sm flex justify-between items-center transition-colors cursor-none ${
                   index === selectedIndex 
                     ? (darkMode ? 'bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-500' : 'bg-emerald-50 text-emerald-700 border-l-2 border-emerald-500') 
                     : (darkMode ? 'border-l-2 border-transparent hover:bg-neutral-900/50 text-neutral-400' : 'border-l-2 border-transparent hover:bg-neutral-50 text-neutral-600')

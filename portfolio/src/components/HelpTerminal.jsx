@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { playTypingClack } from '../utils/audioManager';
 
 export default function HelpTerminal({ darkMode, onNavigate, onBack }) {
   const [history, setHistory] = useState([
@@ -226,6 +227,11 @@ export default function HelpTerminal({ darkMode, onNavigate, onBack }) {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter') {
+                  playTypingClack();
+                }
+              }}
               disabled={isProcessing}
               className={`flex-1 bg-transparent outline-none border-none cursor-none ${
                 darkMode ? 'text-white' : 'text-black'
