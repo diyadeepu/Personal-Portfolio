@@ -90,10 +90,10 @@ export default function Projects({ darkMode }) {
                         e.stopPropagation();
                         setActivePrdProject(project);
                       }}
-                      className={`text-[10px] border px-2 py-0.5 rounded font-bold cursor-pointer transition-colors ${
+                      className={`text-[10px] border px-2 py-0.5 rounded font-bold cursor-none transition-all duration-200 ${
                         darkMode 
-                          ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20' 
-                          : 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100'
+                          ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500 hover:text-black hover:border-emerald-500' 
+                          : 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-600 hover:text-white hover:border-emerald-600'
                       }`}
                     >
                       [view PRD]
@@ -197,7 +197,7 @@ export default function Projects({ darkMode }) {
               </span>
               <button
                 onClick={() => setActivePrdProject(null)}
-                className={`text-[10px] border px-2 py-1 rounded font-bold transition-colors cursor-pointer ${
+                className={`text-[10px] border px-2 py-1 rounded font-bold transition-colors cursor-none ${
                   darkMode ? 'text-neutral-400 border-neutral-700 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 border-neutral-300 hover:text-black hover:bg-neutral-100'
                 }`}
               >
@@ -239,7 +239,7 @@ export default function Projects({ darkMode }) {
         </div>
       )}
 
-      {/* Expanded High-Resolution Preview Modal (Unchanged) */}
+      {/* Expanded High-Resolution Preview Modal */}
       {activeProject?.video && (
         <div
           className={`fixed bottom-6 right-6 z-50 w-[calc(100vw-3rem)] sm:w-[32rem] md:w-[36rem] max-w-[95vw] border rounded-xl p-4 shadow-2xl backdrop-blur-md transition-all pointer-events-none ${
