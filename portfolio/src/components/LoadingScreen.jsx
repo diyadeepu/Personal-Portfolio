@@ -134,7 +134,7 @@ export default function LoadingScreen({ darkMode }) {
       {/* 2. THE TERMINAL PROGRESS BAR */}
       <div className="w-full max-w-2xl mt-8 text-xs sm:text-sm">
         <div className={`mb-2 transition-colors duration-200 ${darkMode ? 'text-neutral-400' : 'text-neutral-500'}`}>
-          > {currentStatus}
+          &gt; {currentStatus}
         </div>
 
         <div className="flex justify-between items-center gap-4">
