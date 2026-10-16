@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import ScrambleText from './ScrambleText';
 import GlowCard from './GlowCard';
 
@@ -76,7 +77,8 @@ function DraggableWindow({ children, darkMode, title, onClose, extraHeaderConten
     };
   }, [isDragging]);
 
-  return (
+  // Wrap the return in createPortal to escape the CSS clip-path trap
+  return createPortal(
     <div
       className={`fixed rounded-xl border shadow-2xl flex flex-col font-mono animate-in fade-in zoom-in-95 duration-200 ${
         darkMode ? 'bg-[#0a0a0a] border-emerald-500/50' : 'bg-white border-emerald-600/50'
@@ -86,7 +88,8 @@ function DraggableWindow({ children, darkMode, title, onClose, extraHeaderConten
         left: `calc(50% + ${position.x}px)`,
         top: `calc(50% + ${position.y}px)`,
         transform: 'translate(-50%, -50%)',
-        width: 'calc(100vw - 2rem)',
+        maxWidth: 'calc(100vw - 2rem)',
+        width: '100%'
       }}
     >
       {/* Draggable Header */}
@@ -116,7 +119,8 @@ function DraggableWindow({ children, darkMode, title, onClose, extraHeaderConten
       <div className="p-6 overflow-y-auto max-h-[70vh]">
         {children}
       </div>
-    </div>
+    </div>,
+    document.body // Renders this exactly at the top level of the DOM
   );
 }
 
