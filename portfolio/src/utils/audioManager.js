@@ -19,7 +19,7 @@ export const initAudio = () => {
   }
 };
 
-// 🔊 Power-up chime to confirm it's working when toggled on
+// 🔊 Softened Power-up Chime
 const playPowerUp = () => {
   if (!audioCtx) return;
   const t = audioCtx.currentTime;
@@ -28,10 +28,10 @@ const playPowerUp = () => {
 
   osc.type = 'sine';
   osc.frequency.setValueAtTime(400, t);
-  osc.frequency.linearRampToValueAtTime(800, t + 0.1);
+  osc.frequency.linearRampToValueAtTime(600, t + 0.1);
 
   gainNode.gain.setValueAtTime(0, t);
-  gainNode.gain.linearRampToValueAtTime(0.2, t + 0.05);
+  gainNode.gain.linearRampToValueAtTime(0.1, t + 0.05);
   gainNode.gain.linearRampToValueAtTime(0, t + 0.15);
 
   osc.connect(gainNode);
@@ -44,13 +44,11 @@ export const toggleGlobalAudio = () => {
   isAudioEnabled = !isAudioEnabled;
   if (isAudioEnabled) {
     initAudio();
-    // Play a confirmation sound instantly so you know it works
     setTimeout(playPowerUp, 50);
   }
   notifyListeners();
 };
 
-// Custom hook to use the toggle in any component
 export const useAudioState = () => {
   const [enabled, setEnabled] = useState(isAudioEnabled);
 
@@ -64,7 +62,6 @@ export const useAudioState = () => {
   return { isAudioEnabled: enabled, toggleGlobalAudio };
 };
 
-// 🔊 Synthesized High-Tech UI Tick (Louder and safer math)
 export const playHoverTick = () => {
   if (!isAudioEnabled || !audioCtx) return;
   const t = audioCtx.currentTime;
@@ -75,7 +72,7 @@ export const playHoverTick = () => {
   osc.frequency.setValueAtTime(800, t);
   osc.frequency.linearRampToValueAtTime(300, t + 0.05);
 
-  gainNode.gain.setValueAtTime(0.2, t);
+  gainNode.gain.setValueAtTime(0.1, t);
   gainNode.gain.linearRampToValueAtTime(0, t + 0.05);
 
   osc.connect(gainNode);
@@ -84,22 +81,34 @@ export const playHoverTick = () => {
   osc.stop(t + 0.05);
 };
 
-// 🔊 Synthesized Mechanical Keyboard Clack (Louder and safer math)
+// 🔊 NEW: Authentic Mechanical Keyboard "Thock" (White Noise + Bandpass Filter)
 export const playTypingClack = () => {
   if (!isAudioEnabled || !audioCtx) return;
   const t = audioCtx.currentTime;
-  const osc = audioCtx.createOscillator();
+
+  // 1. Create a 50ms burst of white noise
+  const bufferSize = audioCtx.sampleRate * 0.05;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buffer;
+
+  // 2. Filter it to sound like plastic hitting a switch
+  const bandpass = audioCtx.createBiquadFilter();
+  bandpass.type = 'bandpass';
+  bandpass.frequency.value = 800 + Math.random() * 400; // Randomize pitch slightly
+
   const gainNode = audioCtx.createGain();
+  gainNode.gain.setValueAtTime(0.3, t); // Volume spike
+  gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.03); // Fast decay
 
-  osc.type = 'square';
-  const pitch = 250 + Math.random() * 50; // Randomize pitch for mechanical feel
-  osc.frequency.setValueAtTime(pitch, t);
-
-  gainNode.gain.setValueAtTime(0.15, t);
-  gainNode.gain.linearRampToValueAtTime(0, t + 0.05);
-
-  osc.connect(gainNode);
+  noise.connect(bandpass);
+  bandpass.connect(gainNode);
   gainNode.connect(audioCtx.destination);
-  osc.start(t);
-  osc.stop(t + 0.05);
+
+  noise.start(t);
 };
