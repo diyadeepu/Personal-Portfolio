@@ -83,14 +83,14 @@ export default function Projects({ darkMode }) {
 
                 {/* Action Buttons Container */}
                 <div className="flex items-center gap-2 z-20">
-                  {/* PRD Popup Button */}
+                  {/* PRD Popup Button - FASTER BOUNCE ADDED HERE */}
                   {project.prd && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setActivePrdProject(project);
                       }}
-                      className={`text-[10px] border px-2 py-0.5 rounded font-bold cursor-none transition-all duration-200 animate-[bounce_3s_infinite] hover:animate-none ${
+                      className={`text-[10px] border px-2 py-0.5 rounded font-bold cursor-none transition-all duration-200 animate-[bounce_1.5s_infinite] hover:animate-none ${
                         darkMode 
                           ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500 hover:text-black hover:border-emerald-500' 
                           : 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-600 hover:text-white hover:border-emerald-600'
