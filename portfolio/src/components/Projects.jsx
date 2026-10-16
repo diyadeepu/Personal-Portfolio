@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import ScrambleText from './ScrambleText';
 import GlowCard from './GlowCard';
 
@@ -41,88 +40,6 @@ const projects = [
     video: null,
   },
 ];
-
-// REUSABLE DRAGGABLE WINDOW COMPONENT
-function DraggableWindow({ children, darkMode, title, onClose, extraHeaderContent, initialX = 0, initialY = 0, zIndex = 100000, widthClass = "max-w-2xl" }) {
-  const [position, setPosition] = useState({ x: initialX, y: initialY });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStart = useRef({ x: 0, y: 0 });
-
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    dragStart.current = {
-      x: e.clientX - position.x,
-      y: e.clientY - position.y
-    };
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!isDragging) return;
-      setPosition({
-        x: e.clientX - dragStart.current.x,
-        y: e.clientY - dragStart.current.y
-      });
-    };
-
-    const handleMouseUp = () => setIsDragging(false);
-
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging]);
-
-  // Wrap the return in createPortal to escape the CSS clip-path trap
-  return createPortal(
-    <div
-      className={`fixed rounded-xl border shadow-2xl flex flex-col font-mono animate-in fade-in zoom-in-95 duration-200 ${
-        darkMode ? 'bg-[#0a0a0a] border-emerald-500/50' : 'bg-white border-emerald-600/50'
-      } ${widthClass}`}
-      style={{
-        zIndex,
-        left: `calc(50% + ${position.x}px)`,
-        top: `calc(50% + ${position.y}px)`,
-        transform: 'translate(-50%, -50%)',
-        maxWidth: 'calc(100vw - 2rem)',
-        width: '100%'
-      }}
-    >
-      {/* Draggable Header */}
-      <div
-        onMouseDown={handleMouseDown}
-        className={`flex items-center justify-between p-3 border-b cursor-grab active:cursor-grabbing ${
-          darkMode ? 'border-neutral-800 bg-neutral-900/50' : 'border-neutral-200 bg-slate-50'
-        }`}
-      >
-        <span className={`text-xs font-bold pointer-events-none ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
-          {title}
-        </span>
-        <div className="flex items-center gap-2">
-          {extraHeaderContent}
-          <button
-            onClick={onClose}
-            className={`text-[10px] border px-2 py-1 rounded font-bold transition-colors cursor-none ${
-              darkMode ? 'text-neutral-400 border-neutral-700 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 border-neutral-300 hover:text-black hover:bg-neutral-100'
-            }`}
-          >
-            [x] close
-          </button>
-        </div>
-      </div>
-
-      {/* Content Area */}
-      <div className="p-6 overflow-y-auto max-h-[70vh]">
-        {children}
-      </div>
-    </div>,
-    document.body // Renders this exactly at the top level of the DOM
-  );
-}
 
 export default function Projects({ darkMode }) {
   const [activeProject, setActiveProject] = useState(null);
@@ -261,73 +178,101 @@ export default function Projects({ darkMode }) {
         ))}
       </div>
 
-      {/* --- DRAGGABLE PRD MODAL --- */}
+      {/* --- PRD POPUP MODAL (Fixed Overlay) --- */}
       {activePrdProject && (
-        <DraggableWindow
-          darkMode={darkMode}
-          title={`$ cat prd_${activePrdProject.title.toLowerCase().replace(/\s+/g, '_')}.md`}
-          onClose={() => setActivePrdProject(null)}
-          zIndex={100005}
+        <div
+          className="fixed inset-0 z-[100000] flex items-center justify-center p-4 backdrop-blur-sm bg-black/60 transition-opacity"
+          onClick={() => setActivePrdProject(null)}
         >
-          <div className="space-y-4">
-            <div>
-              <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## PROBLEM_STATEMENT</h4>
-              <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
-                {activePrdProject.prd.problem}
-              </p>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`relative w-full max-w-2xl rounded-xl border p-6 shadow-2xl overflow-hidden flex flex-col font-mono animate-in fade-in zoom-in-95 duration-200 ${
+              darkMode ? 'bg-[#0a0a0a] border-emerald-500/50' : 'bg-white border-emerald-600/50'
+            }`}
+          >
+            {/* Modal Header */}
+            <div className={`flex items-center justify-between pb-4 mb-4 border-b ${darkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
+              <span className={`text-xs font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                $ cat prd_{activePrdProject.title.toLowerCase().replace(/\s+/g, '_')}.md
+              </span>
+              <button
+                onClick={() => setActivePrdProject(null)}
+                className={`text-[10px] border px-2 py-1 rounded font-bold transition-colors cursor-none ${
+                  darkMode ? 'text-neutral-400 border-neutral-700 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 border-neutral-300 hover:text-black hover:bg-neutral-100'
+                }`}
+              >
+                [x] close
+              </button>
             </div>
 
-            <div>
-              <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## TARGET_USER</h4>
-              <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
-                {activePrdProject.prd.user}
-              </p>
-            </div>
+            {/* Modal Content */}
+            <div className="space-y-4">
+              <div>
+                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## PROBLEM_STATEMENT</h4>
+                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
+                  {activePrdProject.prd.problem}
+                </p>
+              </div>
 
-            <div>
-              <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## SUCCESS_METRICS</h4>
-              <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
-                {activePrdProject.prd.metrics}
-              </p>
-            </div>
+              <div>
+                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## TARGET_USER</h4>
+                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
+                  {activePrdProject.prd.user}
+                </p>
+              </div>
 
-            <div>
-              <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## OUT_OF_SCOPE</h4>
-              <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
-                {activePrdProject.prd.outOfScope}
-              </p>
+              <div>
+                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## SUCCESS_METRICS</h4>
+                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
+                  {activePrdProject.prd.metrics}
+                </p>
+              </div>
+
+              <div>
+                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## OUT_OF_SCOPE</h4>
+                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
+                  {activePrdProject.prd.outOfScope}
+                </p>
+              </div>
             </div>
           </div>
-        </DraggableWindow>
+        </div>
       )}
 
-      {/* --- DRAGGABLE VIDEO PREVIEW MODAL --- */}
+      {/* Expanded High-Resolution Preview Modal (Fixed Corner) */}
       {activeProject?.video && (
-        <DraggableWindow
-          darkMode={darkMode}
-          title={`$ preview --${activeProject.title.toLowerCase().replace(/\s+/g, '-')}`}
-          onClose={() => setActiveProject(null)}
-          initialX={window.innerWidth > 768 ? 200 : 0}
-          initialY={window.innerWidth > 768 ? 100 : 0}
-          zIndex={100000}
-          widthClass="sm:w-[32rem] md:w-[36rem]"
-          extraHeaderContent={
-            activeProject.github && (
-              <a
-                href={activeProject.github}
-                target="_blank"
-                rel="noreferrer"
-                className={`text-[10px] border px-2 py-1 rounded font-bold transition-colors cursor-none ${
+        <div
+          className={`fixed bottom-6 right-6 z-50 w-[calc(100vw-3rem)] sm:w-[32rem] md:w-[36rem] max-w-[95vw] border rounded-xl p-4 shadow-2xl backdrop-blur-md transition-all pointer-events-none ${
+            darkMode
+              ? 'bg-black border-emerald-500/60'
+              : 'bg-white border-emerald-600/60 shadow-2xl'
+          }`}
+        >
+          <div
+            className={`flex items-center justify-between pb-3 mb-3 border-b ${
+              darkMode ? 'border-neutral-800' : 'border-neutral-200'
+            }`}
+          >
+            <span
+              className={`text-xs font-bold ${
+                darkMode ? 'text-emerald-400' : 'text-emerald-600'
+              }`}
+            >
+              $ preview --{activeProject.title.toLowerCase().replace(/\s+/g, '-')}
+            </span>
+            {activeProject.github && (
+              <span
+                className={`text-xs border px-2 py-1 rounded font-bold transition-colors ${
                   darkMode
-                    ? 'text-white bg-emerald-500/20 border-emerald-500/40 hover:bg-emerald-500/40'
-                    : 'text-emerald-800 bg-emerald-100 border-emerald-300 hover:bg-emerald-200'
+                    ? 'text-white bg-emerald-500/20 border-emerald-500/40'
+                    : 'text-emerald-800 bg-emerald-100 border-emerald-300'
                 }`}
               >
                 GitHub Repo ↗
-              </a>
-            )
-          }
-        >
+              </span>
+            )}
+          </div>
+
           <div
             className={`overflow-hidden rounded-lg border aspect-video flex items-center justify-center ${
               darkMode ? 'border-neutral-800 bg-neutral-950' : 'border-neutral-300 bg-neutral-100'
@@ -342,7 +287,7 @@ export default function Projects({ darkMode }) {
               className="w-full h-full object-cover"
             />
           </div>
-        </DraggableWindow>
+        </div>
       )}
     </section>
   );
