@@ -19,6 +19,7 @@ import CopyFeedback from './components/CopyFeedback';
 import ExternalLinkModal from './components/ExternalLinkModal';
 import ScrollProgress from './components/ScrollProgress';
 import NeuralBackground from './components/NeuralBackground';
+import AIAssistantWidget from './components/AIAssistantWidget'; // Added Import
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -170,6 +171,9 @@ function App() {
       <ScrollProgress darkMode={darkMode} />
       <CopyFeedback darkMode={darkMode} />
       <ExternalLinkModal darkMode={darkMode} />
+
+      {/* Added the AI Assistant Widget */}
+      <AIAssistantWidget darkMode={darkMode} />
 
       <CommandPalette
         onNavigate={handleNavigate}
