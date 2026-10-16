@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import MagneticWrapper from './MagneticWrapper';
-import InteractiveAvatar from './InteractiveAvatar';
 
 export default function HeroTerminal({ onContactClick, darkMode, startTyping }) {
   const subtitleText =
@@ -35,7 +34,6 @@ export default function HeroTerminal({ onContactClick, darkMode, startTyping }) 
             : 'bg-white border-neutral-300 text-neutral-900'
         }`}
       >
-        {/* Terminal Header */}
         <div
           className={`flex items-center gap-2 border-b pb-4 mb-6 ${
             darkMode ? 'border-neutral-800' : 'border-neutral-200'
@@ -53,79 +51,65 @@ export default function HeroTerminal({ onContactClick, darkMode, startTyping }) 
           </span>
         </div>
 
-        {/* Terminal Content - Split Layout */}
-        <div className="flex flex-col-reverse md:flex-row items-center md:items-start justify-between gap-8 md:gap-12">
-
-          {/* Left Side: Text Content */}
-          <div className="space-y-4 flex-1 w-full">
-            <p
-              className={
-                darkMode ? 'text-xs text-emerald-400' : 'text-xs text-emerald-600'
-              }
+        <div className="space-y-4">
+          <p
+            className={
+              darkMode ? 'text-xs text-emerald-400' : 'text-xs text-emerald-600'
+            }
+          >
+            welcome@diya-deepu ~ %{' '}
+            <span
+              className={darkMode ? 'text-white' : 'text-neutral-900 font-semibold'}
             >
-              welcome@diya-deepu ~ %{' '}
-              <span
-                className={darkMode ? 'text-white' : 'text-neutral-900 font-semibold'}
-              >
-                cat intro.txt
-              </span>
-            </p>
+              cat intro.txt
+            </span>
+          </p>
 
-            <h1
-              className={`text-3xl sm:text-5xl font-bold tracking-tight ${
-                darkMode ? 'text-white' : 'text-neutral-900'
+          <h1
+            className={`text-3xl sm:text-5xl font-bold tracking-tight ${
+              darkMode ? 'text-white' : 'text-neutral-900'
+            }`}
+          >
+            Diya Deepu
+          </h1>
+
+          <p
+            className={`text-sm sm:text-base font-semibold min-h-[1.75rem] flex items-center ${
+              darkMode ? 'text-emerald-400' : 'text-emerald-600'
+            }`}
+          >
+            <span>{displayedText}</span>
+            <span
+              className={`animate-pulse inline-block w-2 h-4 ml-1 ${
+                darkMode ? 'bg-emerald-400' : 'bg-emerald-600'
               }`}
-            >
-              Diya Deepu
-            </h1>
-
-            <p
-              className={`text-sm sm:text-base font-semibold min-h-[1.75rem] flex items-center ${
-                darkMode ? 'text-emerald-400' : 'text-emerald-600'
-              }`}
-            >
-              <span>{displayedText}</span>
-              <span
-                className={`animate-pulse inline-block w-2 h-4 ml-1 ${
-                  darkMode ? 'bg-emerald-400' : 'bg-emerald-600'
-                }`}
-              />
-            </p>
-
-            <p
-              className={`text-sm leading-relaxed max-w-2xl ${
-                darkMode ? 'text-neutral-300' : 'text-neutral-700'
-              }`}
-            >
-              Honors Computer Science student minoring in Business at Oregon State
-              University (4.0 GPA). Deeply passionate about full-stack software
-              development, AI systems integration, and product management.
-            </p>
-
-            <div className="pt-2 flex flex-wrap gap-3">
-              <MagneticWrapper>
-                <button
-                  onClick={onContactClick}
-                  className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-xs font-bold transition-all cursor-none ${
-                    darkMode
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
-                      : 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100'
-                  }`}
-                >
-                  <span>$</span> contact --info ↗
-                </button>
-              </MagneticWrapper>
-            </div>
-          </div>
-
-          {/* Right Side: Interactive Avatar */}
-          <div className="shrink-0 flex justify-center w-full md:w-auto">
-            <InteractiveAvatar
-              darkMode={darkMode}
-              videoSrc="/videos/head_tracking.mp4"
             />
-          </div>
+          </p>
 
+          <p
+            className={`text-sm leading-relaxed max-w-3xl ${
+              darkMode ? 'text-neutral-300' : 'text-neutral-700'
+            }`}
+          >
+            Honors Computer Science student minoring in Business at Oregon State
+            University (4.0 GPA). Deeply passionate about full-stack software
+            development, AI systems integration, and product management.
+          </p>
+
+          <div className="pt-2 flex flex-wrap gap-3">
+            <MagneticWrapper>
+              <button
+                onClick={onContactClick}
+                className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  darkMode
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+                    : 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100'
+                }`}
+              >
+                <span>$</span> contact --info ↗
+              </button>
+            </MagneticWrapper>
+          </div>
         </div>
       </div>
     </section>
