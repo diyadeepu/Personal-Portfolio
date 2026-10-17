@@ -46,7 +46,7 @@ const projects = [
   },
 ];
 
-// 2. The 3D CSS Rubik's Cube Component
+// 2. The 3D CSS Rubik's Cube Component (SMOOTHED + RADAR GRID)
 function PRDCubeModal({ project, darkMode, onClose }) {
   const [rotation, setRotation] = useState({ x: -15, y: -25 });
   const [isDragging, setIsDragging] = useState(false);
@@ -62,8 +62,8 @@ function PRDCubeModal({ project, darkMode, onClose }) {
     if (!isDragging) return;
     const deltaX = e.clientX - dragStart.current.x;
     const deltaY = e.clientY - dragStart.current.y;
-    // Adjust rotation speed via multiplier
-    setRotation(prev => ({ x: prev.x - deltaY * 0.5, y: prev.y + deltaX * 0.5 }));
+    // Lower multiplier (0.3) for heavier, smoother rotation feel
+    setRotation(prev => ({ x: prev.x - deltaY * 0.3, y: prev.y + deltaX * 0.3 }));
     dragStart.current = { x: e.clientX, y: e.clientY };
   };
 
@@ -72,12 +72,12 @@ function PRDCubeModal({ project, darkMode, onClose }) {
     e.target.releasePointerCapture(e.pointerId);
   };
 
-  const cubeSize = 288; // w-72 h-72 = 288px
+  const cubeSize = 288;
   const translateZ = cubeSize / 2;
 
   const Face = ({ title, content, transform, faceName }) => (
     <div
-      className={`absolute inset-0 w-full h-full border-2 p-6 flex flex-col justify-center shadow-[0_0_30px_rgba(16,185,129,0.1)] ${
+      className={`absolute inset-0 w-full h-full border-2 p-6 flex flex-col justify-center shadow-[0_0_40px_rgba(16,185,129,0.15)] ${
         darkMode ? 'bg-[#050505]/95 border-emerald-500/50' : 'bg-white/95 border-emerald-600/50'
       }`}
       style={{ transform, backfaceVisibility: 'hidden' }}
@@ -95,7 +95,23 @@ function PRDCubeModal({ project, darkMode, onClose }) {
   );
 
   return (
-    <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 backdrop-blur-md bg-black/70 animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 overflow-hidden animate-in fade-in duration-300">
+
+      {/* 3. The Blueprint Radar Grid Background */}
+      <div className={`absolute inset-0 z-0 ${darkMode ? 'bg-[#020504]' : 'bg-[#f0fdf4]'}`}>
+        {/* Grid Lines */}
+        <div
+          className="absolute inset-0 bg-[linear-gradient(to_right,var(--grid-color)_1px,transparent_1px),linear-gradient(to_bottom,var(--grid-color)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_40%,transparent_100%)]"
+          style={{ '--grid-color': darkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.3)' }}
+        />
+        {/* Sweeping Radar Scanner */}
+        <div className="absolute top-1/2 left-1/2 w-[150vmax] h-[150vmax] -translate-x-1/2 -translate-y-1/2 pointer-events-none [mask-image:radial-gradient(circle_at_center,black_10%,transparent_40%)]">
+           <div
+             className="w-full h-full animate-[spin_6s_linear_infinite] rounded-full"
+             style={{ background: `conic-gradient(from 0deg, transparent 75%, ${darkMode ? 'rgba(16, 185, 129, 0.4)' : 'rgba(16, 185, 129, 0.3)'} 100%)` }}
+           />
+        </div>
+      </div>
 
       {/* HUD Header & Close Button */}
       <div className="absolute top-6 left-6 right-6 flex justify-between items-center z-50 pointer-events-none">
@@ -108,8 +124,8 @@ function PRDCubeModal({ project, darkMode, onClose }) {
         </div>
         <button
           onClick={onClose}
-          className={`text-xs border px-4 py-2 rounded font-bold transition-all cursor-none pointer-events-auto ${
-            darkMode ? 'text-emerald-400 border-emerald-500/50 hover:bg-emerald-500 hover:text-black' : 'text-emerald-700 border-emerald-600/50 hover:bg-emerald-600 hover:text-white'
+          className={`text-xs border px-4 py-2 rounded font-bold transition-all cursor-none pointer-events-auto shadow-lg backdrop-blur-md ${
+            darkMode ? 'text-emerald-400 border-emerald-500/50 hover:bg-emerald-500 hover:text-black' : 'text-emerald-700 border-emerald-600/50 bg-white/50 hover:bg-emerald-600 hover:text-white'
           }`}
         >
           [x] exit_3D_mode
@@ -118,8 +134,8 @@ function PRDCubeModal({ project, darkMode, onClose }) {
 
       {/* 3D Scene Container */}
       <div
-        className="relative w-72 h-72 cursor-grab active:cursor-grabbing touch-none"
-        style={{ perspective: '1200px' }}
+        className="relative w-72 h-72 cursor-grab active:cursor-grabbing touch-none z-10"
+        style={{ perspective: '1000px' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -130,7 +146,8 @@ function PRDCubeModal({ project, darkMode, onClose }) {
           style={{
             transformStyle: 'preserve-3d',
             transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-            transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+            // SMOOTHING FIX: Adds micro-interpolations between mouse frames
+            transition: isDragging ? 'transform 0.1s cubic-bezier(0.33, 1, 0.68, 1)' : 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)'
           }}
         >
           <Face faceName="Face 1" title="Problem_Statement" content={project.prd.problem} transform={`translateZ(${translateZ}px)`} />
