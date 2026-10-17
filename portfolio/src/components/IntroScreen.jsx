@@ -14,12 +14,13 @@ export default function IntroScreen({ onProceed, darkMode }) {
   return (
     <section className="min-h-screen w-full flex flex-col items-center justify-center px-6 md:px-16 font-mono relative overflow-hidden bg-[#050505] text-white pb-24">
 
-      {/* Embedded Styles for the Cursive Font and Marquee Animation */}
+      {/* Embedded Styles for Sacramento Script and Marquee Animation */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Sacramento&display=swap');
         
         .font-signature {
-          font-family: 'Caveat', cursive;
+          font-family: 'Sacramento', cursive;
+          font-weight: 400;
         }
 
         @keyframes infiniteScroll {
@@ -48,7 +49,8 @@ export default function IntroScreen({ onProceed, darkMode }) {
 
           <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight leading-tight">
             Hi, I'm <br />
-            <span className="text-emerald-400 font-signature text-6xl sm:text-8xl tracking-normal font-bold inline-block pt-2">
+            {/* Swapped to Sacramento, removed font-bold, and slightly increased size */}
+            <span className="text-emerald-400 font-signature text-7xl sm:text-8xl tracking-normal inline-block pt-2 pr-4">
               Diya Deepu
             </span>
           </h1>
