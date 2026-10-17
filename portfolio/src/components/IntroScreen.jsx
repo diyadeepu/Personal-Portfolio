@@ -13,6 +13,29 @@ export default function IntroScreen({ onProceed, darkMode }) {
 
   return (
     <section className="min-h-screen w-full flex flex-col items-center justify-center px-6 md:px-16 font-mono relative overflow-hidden bg-[#050505] text-white pb-24">
+
+      {/* Embedded Styles for the Cursive Font and Marquee Animation */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
+        
+        .font-signature {
+          font-family: 'Caveat', cursive;
+        }
+
+        @keyframes infiniteScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .anim-scroll {
+          display: flex;
+          width: max-content;
+          animation: infiniteScroll 45s linear infinite;
+        }
+        .anim-scroll:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+
       {/* Main Content Area */}
       <div className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-12 z-10 py-12 mt-8">
 
@@ -24,7 +47,10 @@ export default function IntroScreen({ onProceed, darkMode }) {
           </div>
 
           <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight leading-tight">
-            Hi, I'm <br /><span className="text-emerald-400">Diya Deepu</span>
+            Hi, I'm <br />
+            <span className="text-emerald-400 font-signature text-6xl sm:text-8xl tracking-normal font-bold inline-block pt-2">
+              Diya Deepu
+            </span>
           </h1>
 
           <MagneticWrapper>
@@ -59,22 +85,6 @@ export default function IntroScreen({ onProceed, darkMode }) {
 
       {/* Infinite Tech Stack Marquee Footer */}
       <div className="absolute bottom-0 left-0 w-full border-t border-neutral-900 bg-[#050505] py-5 z-20">
-
-        {/* CSS for the seamless scrolling animation */}
-        <style>{`
-          @keyframes infiniteScroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          .anim-scroll {
-            display: flex;
-            width: max-content;
-            animation: infiniteScroll 45s linear infinite;
-          }
-          .anim-scroll:hover {
-            animation-play-state: paused;
-          }
-        `}</style>
 
         {/* Gradient edge mask to fade the items out smoothly */}
         <div
