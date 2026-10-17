@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import ScrambleText from './ScrambleText';
 import GlowCard from './GlowCard';
 
+// 1. Updated Data with 6 PM Metrics for the 3D Cube
 const projects = [
   {
     title: 'Electable',
@@ -14,7 +15,9 @@ const projects = [
       problem: 'Voters lack an accessible, unbiased way to align their personal values with congressional candidate records.',
       user: 'Young voters (18-29) and first-time participants seeking data-driven civic alignment.',
       metrics: 'User match-completion rate, API latency < 1.5s, and session duration.',
-      outOfScope: 'Local/state elections, real-time polling integration.'
+      outOfScope: 'Local/state elections, real-time polling integration.',
+      gtm: 'Pilot launch prior to midterm elections via university civic engagement clubs.',
+      techStack: 'React for UI, Node.js backend, FEC REST API, Gemini AI.'
     }
   },
   {
@@ -28,7 +31,9 @@ const projects = [
       problem: 'Standard navigation apps optimize for speed, ignoring pedestrian concerns like street lighting and populated areas.',
       user: 'College students, late-night urban commuters, and vulnerable pedestrians.',
       metrics: 'Route generation time, user safety rating post-trip, daily active users.',
-      outOfScope: 'Turn-by-turn voice dictation, driving/transit modes.'
+      outOfScope: 'Turn-by-turn voice dictation, driving/transit modes.',
+      gtm: 'Targeted beta testing at university campuses for late-night study commuters.',
+      techStack: 'React, Figma for UX Mockups, Location Services API.'
     }
   },
   {
@@ -41,9 +46,108 @@ const projects = [
   },
 ];
 
+// 2. The 3D CSS Rubik's Cube Component
+function PRDCubeModal({ project, darkMode, onClose }) {
+  const [rotation, setRotation] = useState({ x: -15, y: -25 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+
+  const handlePointerDown = (e) => {
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX, y: e.clientY };
+    e.target.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isDragging) return;
+    const deltaX = e.clientX - dragStart.current.x;
+    const deltaY = e.clientY - dragStart.current.y;
+    // Adjust rotation speed via multiplier
+    setRotation(prev => ({ x: prev.x - deltaY * 0.5, y: prev.y + deltaX * 0.5 }));
+    dragStart.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handlePointerUp = (e) => {
+    setIsDragging(false);
+    e.target.releasePointerCapture(e.pointerId);
+  };
+
+  const cubeSize = 288; // w-72 h-72 = 288px
+  const translateZ = cubeSize / 2;
+
+  const Face = ({ title, content, transform, faceName }) => (
+    <div
+      className={`absolute inset-0 w-full h-full border-2 p-6 flex flex-col justify-center shadow-[0_0_30px_rgba(16,185,129,0.1)] ${
+        darkMode ? 'bg-[#050505]/95 border-emerald-500/50' : 'bg-white/95 border-emerald-600/50'
+      }`}
+      style={{ transform, backfaceVisibility: 'hidden' }}
+    >
+      <div className={`absolute top-2 left-3 text-[9px] font-bold opacity-50 uppercase ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+        [ {faceName} ]
+      </div>
+      <h4 className={`text-xs font-bold mb-3 uppercase tracking-widest ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+        ## {title}
+      </h4>
+      <p className={`text-xs leading-relaxed font-medium ${darkMode ? 'text-neutral-300' : 'text-neutral-700'}`}>
+        {content}
+      </p>
+    </div>
+  );
+
+  return (
+    <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 backdrop-blur-md bg-black/70 animate-in fade-in duration-300">
+
+      {/* HUD Header & Close Button */}
+      <div className="absolute top-6 left-6 right-6 flex justify-between items-center z-50 pointer-events-none">
+        <div className={`text-xs font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+          $ render --3D prd_{project.title.toLowerCase().replace(/\s+/g, '_')}
+          <br/>
+          <span className="text-[10px] opacity-70 mt-1 block">
+            &gt; click and drag to rotate the product spec cube
+          </span>
+        </div>
+        <button
+          onClick={onClose}
+          className={`text-xs border px-4 py-2 rounded font-bold transition-all cursor-none pointer-events-auto ${
+            darkMode ? 'text-emerald-400 border-emerald-500/50 hover:bg-emerald-500 hover:text-black' : 'text-emerald-700 border-emerald-600/50 hover:bg-emerald-600 hover:text-white'
+          }`}
+        >
+          [x] exit_3D_mode
+        </button>
+      </div>
+
+      {/* 3D Scene Container */}
+      <div
+        className="relative w-72 h-72 cursor-grab active:cursor-grabbing touch-none"
+        style={{ perspective: '1200px' }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+      >
+        <div
+          className="w-full h-full relative"
+          style={{
+            transformStyle: 'preserve-3d',
+            transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+            transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+          }}
+        >
+          <Face faceName="Face 1" title="Problem_Statement" content={project.prd.problem} transform={`translateZ(${translateZ}px)`} />
+          <Face faceName="Face 2" title="Target_User" content={project.prd.user} transform={`rotateY(180deg) translateZ(${translateZ}px)`} />
+          <Face faceName="Face 3" title="Success_Metrics" content={project.prd.metrics} transform={`rotateY(90deg) translateZ(${translateZ}px)`} />
+          <Face faceName="Face 4" title="Out_Of_Scope" content={project.prd.outOfScope} transform={`rotateY(-90deg) translateZ(${translateZ}px)`} />
+          <Face faceName="Face 5" title="GTM_Strategy" content={project.prd.gtm} transform={`rotateX(90deg) translateZ(${translateZ}px)`} />
+          <Face faceName="Face 6" title="Tech_Stack" content={project.prd.techStack} transform={`rotateX(-90deg) translateZ(${translateZ}px)`} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Projects({ darkMode }) {
   const [activeProject, setActiveProject] = useState(null);
-  const [activePrdProject, setActivePrdProject] = useState(null);
+  const [activeCubeProject, setActiveCubeProject] = useState(null);
 
   return (
     <section className="w-full max-w-5xl font-mono relative">
@@ -71,9 +175,9 @@ export default function Projects({ darkMode }) {
             }`}
           >
             <div>
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-start justify-between mb-3">
                 <div
-                  className={`flex items-center gap-2 font-bold text-base ${
+                  className={`flex items-center gap-2 font-bold text-base mt-1 ${
                     darkMode ? 'text-emerald-400' : 'text-emerald-600'
                   }`}
                 >
@@ -81,25 +185,8 @@ export default function Projects({ darkMode }) {
                   <span>{project.title}</span>
                 </div>
 
-                {/* Action Buttons Container */}
-                <div className="flex items-center gap-2 z-20">
-                  {/* PRD Popup Button - FASTER BOUNCE ADDED HERE */}
-                  {project.prd && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActivePrdProject(project);
-                      }}
-                      className={`text-[10px] border px-2 py-0.5 rounded font-bold cursor-none transition-all duration-200 animate-[bounce_1.5s_infinite] hover:animate-none ${
-                        darkMode 
-                          ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500 hover:text-black hover:border-emerald-500' 
-                          : 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-600 hover:text-white hover:border-emerald-600'
-                      }`}
-                    >
-                      [view PRD]
-                    </button>
-                  )}
-
+                {/* Stacked Action Buttons Container (Vertical Layout) */}
+                <div className="flex flex-col items-end gap-2 z-20 h-[60px]">
                   {project.video && (
                     <span
                       className={`text-[10px] border px-2 py-0.5 rounded font-semibold ${
@@ -110,6 +197,23 @@ export default function Projects({ darkMode }) {
                     >
                       [hover preview]
                     </span>
+                  )}
+
+                  {/* 3D Cube PRD Button Bouncing Below */}
+                  {project.prd && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveCubeProject(project);
+                      }}
+                      className={`text-[10px] border px-2 py-0.5 rounded font-bold cursor-none transition-all duration-200 animate-[bounce_1.5s_infinite] hover:animate-none ${
+                        darkMode 
+                          ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500 hover:text-black hover:border-emerald-500' 
+                          : 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-600 hover:text-white hover:border-emerald-600'
+                      }`}
+                    >
+                      [view 3D PRD]
+                    </button>
                   )}
                 </div>
               </div>
@@ -178,65 +282,13 @@ export default function Projects({ darkMode }) {
         ))}
       </div>
 
-      {/* --- PRD POPUP MODAL (Fixed Overlay) --- */}
-      {activePrdProject && (
-        <div
-          className="fixed inset-0 z-[100000] flex items-center justify-center p-4 backdrop-blur-sm bg-black/60 transition-opacity"
-          onClick={() => setActivePrdProject(null)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className={`relative w-full max-w-2xl rounded-xl border p-6 shadow-2xl overflow-hidden flex flex-col font-mono animate-in fade-in zoom-in-95 duration-200 ${
-              darkMode ? 'bg-[#0a0a0a] border-emerald-500/50' : 'bg-white border-emerald-600/50'
-            }`}
-          >
-            {/* Modal Header */}
-            <div className={`flex items-center justify-between pb-4 mb-4 border-b ${darkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
-              <span className={`text-xs font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                $ cat prd_{activePrdProject.title.toLowerCase().replace(/\s+/g, '_')}.md
-              </span>
-              <button
-                onClick={() => setActivePrdProject(null)}
-                className={`text-[10px] border px-2 py-1 rounded font-bold transition-colors cursor-none ${
-                  darkMode ? 'text-neutral-400 border-neutral-700 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 border-neutral-300 hover:text-black hover:bg-neutral-100'
-                }`}
-              >
-                [x] close
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="space-y-4">
-              <div>
-                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## PROBLEM_STATEMENT</h4>
-                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
-                  {activePrdProject.prd.problem}
-                </p>
-              </div>
-
-              <div>
-                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## TARGET_USER</h4>
-                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
-                  {activePrdProject.prd.user}
-                </p>
-              </div>
-
-              <div>
-                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## SUCCESS_METRICS</h4>
-                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
-                  {activePrdProject.prd.metrics}
-                </p>
-              </div>
-
-              <div>
-                <h4 className={`text-xs font-bold mb-1 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>## OUT_OF_SCOPE</h4>
-                <p className={`text-xs leading-relaxed pl-3 border-l-2 ${darkMode ? 'border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700'}`}>
-                  {activePrdProject.prd.outOfScope}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* --- RENDER THE 3D CUBE MODAL --- */}
+      {activeCubeProject && (
+        <PRDCubeModal
+          project={activeCubeProject}
+          darkMode={darkMode}
+          onClose={() => setActiveCubeProject(null)}
+        />
       )}
 
       {/* Expanded High-Resolution Preview Modal (Fixed Corner) */}
