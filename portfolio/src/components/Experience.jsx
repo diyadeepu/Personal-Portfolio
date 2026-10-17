@@ -17,7 +17,7 @@ export default function Experience({ darkMode }) {
     company: 'Cardinal Services x OSU PM Club',
     date: 'Apr 2026 – June 2026',
     bullets: [
-      'Architected product requirements and planned streamlined HR onboarding workflows with 7 other interns.',
+      'Worked on product requirements and planned streamlined HR onboarding workflows with 7 other interns.',
       'Identified specific business needs and requirements from cross-functional leadership and qualitative research.',
     ],
     },
@@ -27,7 +27,7 @@ export default function Experience({ darkMode }) {
       date: 'Aug 2023 – Mar 2024',
       bullets: [
         'Built full-stack interactive features for an adaptive high school college-fit evaluation web app.',
-        'Integrated an AI chatbot and custom site navigation flows using React, Node.js, and Express.',
+        'Integrated an AI chatbot and custom site navigation flows using Python, HTML, CSS, & JS.',
       ],
     },
   ];
