@@ -95,8 +95,14 @@ export default function HelpTerminal({ darkMode, onNavigate, onBack }) {
     setInput('');
     setIsProcessing(true); // Lock input until typing finishes
 
+    // Trigger physical file download
     if (['get resume', 'curl resume', 'download resume'].includes(command)) {
-      window.dispatchEvent(new CustomEvent('start-download'));
+      const link = document.createElement('a');
+      link.href = `${import.meta.env.BASE_URL}Diya_Deepu_Resume.pdf`;
+      link.download = 'Diya_Deepu_Resume.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     setTimeout(() => {
