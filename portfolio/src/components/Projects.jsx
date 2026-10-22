@@ -2,8 +2,24 @@ import { useState, useRef } from 'react';
 import ScrambleText from './ScrambleText';
 import GlowCard from './GlowCard';
 
-// 1. Updated Data with 6 PM Metrics for the 3D Cube
+// 1. Updated Data with the new Human-in-the-Loop Drone Simulation
 const projects = [
+  {
+    title: 'Human-in-the-Loop Drone Sim',
+    dates: 'Sep 2026 – Present',
+    desc: 'Software system simulating an autonomous search-and-rescue drone that dynamically adapts its pathfinding based on real-time human operator guidance.',
+    tech: ['Autonomous Systems', 'Pathfinding', 'LIDAR Sim', 'System Architecture'],
+    github: null,
+    video: null,
+    prd: {
+      problem: 'Search missions require autonomous drones that can dynamically adapt their search plans based on real-time intelligence from human operators.',
+      user: 'Search-and-rescue operators who need to provide high-level guidance without micro-managing drone flight controls.',
+      metrics: 'End-to-end mission completion, successful obstacle avoidance, and rapid adaptation to new operator waypoints.',
+      outOfScope: 'Physical hardware integration, advanced computer-vision person detection (simulated via proximity).',
+      gtm: 'Deliver an MVP demonstrating the core end-to-end autonomous search loop with manual operator override.',
+      techStack: 'Simulation Environment, Ray-cast obstacle detection, Pathfinding logic, and a UI presentation layer.'
+    }
+  },
   {
     title: 'Electable',
     dates: 'May 2026',
